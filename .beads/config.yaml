@@ -66,3 +66,5 @@
 # - github.token    → use GITHUB_TOKEN env var instead
 
 sync.remote: "git+https://github.com/AFMT8721/mikmak_hack.git"
+export:
+    auto: true

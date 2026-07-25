@@ -118,6 +118,42 @@ pipette — over a deck of well plates, tip racks, and two electronic pipettes,
 with a canvas for run setup. The skills are left-arm only and stage at a shared
 pose so they compose in any order.
 
+Built on top of that: a **TEM-1 beta-lactamase CFPS screening bench**, run as a
+closed Plan → Simulate → Approve → Execute → Analyze loop (`pipeline/`, Google
+ADK + beads + marimo), across three round types:
+
+- **`kinetics`** (`workflows/tem1_kinetics_characterization.json`) — standalone
+  purified-TEM1 x nitrocefin-substrate grid, read kinetically. Prerequisite: its
+  fit sets the nitrocefin working concentration and endpoint timing used below.
+- **`cfps_expression`** — Part 1 (`workflows/cfps_mastermix.json`, pre-existing,
+  own canvas) expresses TEM1 via CFPS; Part 2
+  (`workflows/cfps_sfgfp_confirmation.json`) reads sfGFP on the same plate as a
+  go/no-go gate before spending a screen on it.
+- **`inhibitor_dose_response`** (`workflows/cfps_inhibitor_dose_response.json`,
+  `canvas/cfps_inhibitor_dose_response_screen.tsx`) — doses a confirmed-expressed
+  well with compound + nitrocefin per position and reads kinetically; the initial
+  slope of A490 vs time is TEM-1's velocity, and inhibition drops it.
+
+`pipeline/beads_writer.py` is the **single writer** to the beads (`bd`) DAG — every
+stage transition of every round goes through it, nothing else calls `bd` directly.
+`pipeline/agents/plan_agent.py` and `analyze_agent.py` are Google ADK agents (their
+actual decision logic is plain, LLM-free functions the ADK tools wrap);
+`pipeline/simulate.py` runs `scripts/validate.py` (+ `zeon verify` once that
+command exists — it isn't implemented on this CLI build yet); `pipeline/apps/`
+holds the marimo Approve gate and results dashboard; `pipeline/watch_execution.py`
+notices a human-triggered Zeon run landing (there's no programmatic run trigger)
+and links it to its round.
+
+`pipeline/library/compounds.csv` is a **3-row placeholder** — swap in the real
+compound library (same columns: `compound_id,source_well,stock_conc_um`) without
+touching any other file. `pipeline/agents/analyze_agent.py`'s `parse_gen5_export`
+is a **stub** returning synthetic but realistically-shaped data — swap its body
+for real Gen5 PDF parsing once a sample export (endpoint and kinetic) is in hand.
+Grid sizes, default concentration ranges, and stock concentrations throughout
+`plan_agent.py` are placeholders flagged in-line; nothing scientific here is
+tuned yet, only wired correctly end to end (traced with fabricated data through
+every stage, beads events landing in the right order, for all three round types).
+
 **Rewrite this section as the project becomes yours.** Describe your deck, your
 protocol, and anything about this bench a new session could not infer from the
 files. Keep everything above it — that is what makes the next session start
