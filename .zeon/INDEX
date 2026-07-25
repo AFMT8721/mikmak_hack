@@ -1,0 +1,1022 @@
+{
+  ".DS_Store": {
+    "blob_sha": "ffe7cb4c6aba1e3904c4f4e25cf2969cf31b57f66f5599f904f8ed330cdaf3af",
+    "mode": "blob",
+    "mtime": 1785009883.5926573
+  },
+  ".gitignore": {
+    "blob_sha": "fe07aeae2cfd1ff2ce4c0c5911dfbb550a3f1065e213175039abadfc3a5a15bb",
+    "mode": "blob",
+    "mtime": 1785009082.7845933
+  },
+  ".python-version": {
+    "blob_sha": "49a506dd32096b010d75205acf3430c9ae6c40351888129499e5a5e487126c93",
+    "mode": "blob",
+    "mtime": 1785009293.0050547
+  },
+  "CLAUDE.md": {
+    "blob_sha": "95dbe8be746cc9637c4435d678a2ce54735cabe6a0746059324fc321aa1e7a6b",
+    "mode": "blob",
+    "mtime": 1785010558.1607223
+  },
+  "LICENSE": {
+    "blob_sha": "e72a2fc5965ac3c215d118bce84a58b3fea84625177937c6315930cf1f490d38",
+    "mode": "blob",
+    "mtime": 1785009082.7846868
+  },
+  "README.md": {
+    "blob_sha": "e27153197645359674343958999b5c8ebb94d426c0c451d7b3c3f480754d04b0",
+    "mode": "blob",
+    "mtime": 1785009082.784767
+  },
+  "canvas/.gitkeep": {
+    "blob_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": "blob",
+    "mtime": 1785010558.161134
+  },
+  "canvas/cfps_mastermix_screen.tsx": {
+    "blob_sha": "86308761f2ce0f98ba5af5042cafd9d7c16f20864799f7426f1d95bfbd8eca19",
+    "mode": "blob",
+    "mtime": 1785008454.9307995
+  },
+  "canvas/pipette_demo_screen.tsx": {
+    "blob_sha": "b606b97df576e10b4a3383dcbcb51f0d18b63166aa8adbbab0ebd47a4ac6f3d2",
+    "mode": "blob",
+    "mtime": 1785010558.1616302
+  },
+  "main.py": {
+    "blob_sha": "a971a31a2ef8c2188e241c92522cbe69f9daf732aac370ad28e8095dafe20a56",
+    "mode": "blob",
+    "mtime": 1785009293.0046425
+  },
+  "objects/.gitkeep": {
+    "blob_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": "blob",
+    "mtime": 1785010558.1619835
+  },
+  "objects/coldblock_holder/coldblock_holder.object_model.yaml": {
+    "blob_sha": "3d2cf60f5a343f1a9a849002b018ad493d72e59b63034dfaef3a5b93225adbbf",
+    "mode": "blob",
+    "mtime": 1785008454.9311235
+  },
+  "objects/coldblock_holder/coldblock_holder.urdf": {
+    "blob_sha": "d11bdff4143886629a022f62595c3ecc8ca0f4d3e10df446fd01ec9e664d4107",
+    "mode": "blob",
+    "mtime": 1785008454.9312184
+  },
+  "objects/coldblock_large/coldblock_large.object_model.yaml": {
+    "blob_sha": "0ff487c3d8a1855e1812073ba1e04bc53e8712c285acefbdb36d0e26dd635930",
+    "mode": "blob",
+    "mtime": 1785008454.9313571
+  },
+  "objects/coldblock_large/coldblock_large.urdf": {
+    "blob_sha": "25109f79452404a66e3cf693796a16fbfe16c0a4f2653f19161531a857a29c63",
+    "mode": "blob",
+    "mtime": 1785008454.9314487
+  },
+  "objects/coldblock_small/coldblock_small.object_model.yaml": {
+    "blob_sha": "8e9ea034f67df868d1fd3781f62e416067b2e3f4ec5ce01872a69a57c564029f",
+    "mode": "blob",
+    "mtime": 1785008454.9315877
+  },
+  "objects/coldblock_small/coldblock_small.urdf": {
+    "blob_sha": "68fcdee268c4ba775898728ce8a5ff162344b2e048a3dc0a024cf9273297b8ec",
+    "mode": "blob",
+    "mtime": 1785008454.9316685
+  },
+  "objects/coldblock_wellplate/coldblock_wellplate.object_model.yaml": {
+    "blob_sha": "d4a04dbc0f432ebf49c23ec981f8742d491773af3405931300ce1fb09d872aae",
+    "mode": "blob",
+    "mtime": 1785008454.93184
+  },
+  "objects/coldblock_wellplate/coldblock_wellplate.urdf": {
+    "blob_sha": "8ff742a0a9162a9561d047ed4ad6b6b6142d7056107bed5963cdb65cce59aa71",
+    "mode": "blob",
+    "mtime": 1785008454.9319189
+  },
+  "objects/coldblock_wellplate_holder/coldblock_wellplate_holder.object_model.yaml": {
+    "blob_sha": "537bb2d79f5f051320da0360a53fb810db36db2fc31fc79be8d08afdf4cd2177",
+    "mode": "blob",
+    "mtime": 1785008454.9321082
+  },
+  "objects/coldblock_wellplate_holder/coldblock_wellplate_holder.urdf": {
+    "blob_sha": "6bb53188753288332ce68cd32c305f3790d8c812f27ef75de18ee7262320189c",
+    "mode": "blob",
+    "mtime": 1785008454.9321942
+  },
+  "objects/epipette_10ul/epipette_10ul.object_model.yaml": {
+    "blob_sha": "f7fb825b34fdafc8650c2bfda07510516137759742adc2be1bff7258656481d0",
+    "mode": "blob",
+    "mtime": 1785008454.9323418
+  },
+  "objects/epipette_10ul/epipette_10ul.urdf": {
+    "blob_sha": "abeaf27c2bcd35f5554718b60c5d2ceda3d2bab81c0d970912a268949e167a2d",
+    "mode": "blob",
+    "mtime": 1785008454.9324358
+  },
+  "objects/epipette_120ul/epipette_120ul.object_model.yaml": {
+    "blob_sha": "b7e976eff6a5b56c54e5b1788e03e3a293228d364ddb553224b4723840346432",
+    "mode": "blob",
+    "mtime": 1785008454.93258
+  },
+  "objects/epipette_120ul/epipette_120ul.urdf": {
+    "blob_sha": "ee8e31ddccb36abc38dda4f5a6dae2b215046fe7344595cc815862e7b45550b9",
+    "mode": "blob",
+    "mtime": 1785008454.9326625
+  },
+  "objects/epipette_grey/epipette_grey.object_model.yaml": {
+    "blob_sha": "d7b71a27357bac0bec81ae00052c7c146c2e5b4012ee713cc5965ade7abaec15",
+    "mode": "blob",
+    "mtime": 1785008454.9328089
+  },
+  "objects/epipette_grey/epipette_grey.urdf": {
+    "blob_sha": "c567256431372b4588e2dcea542442a95961eea367c348a94cfa3699a4625c9e",
+    "mode": "blob",
+    "mtime": 1785008454.932897
+  },
+  "objects/epipette_grey_framed/epipette_grey_framed.object_model.yaml": {
+    "blob_sha": "23b31de91feb597828faf35adeb4eeebeefae0d145475af6bff7227b5c4cc2b0",
+    "mode": "blob",
+    "mtime": 1785008454.9330382
+  },
+  "objects/epipette_grey_framed/epipette_grey_framed.urdf": {
+    "blob_sha": "16c29021855d05f49c0fe703f0f62dc94ba3232f54dbd4c5986b54f9b6c02f21",
+    "mode": "blob",
+    "mtime": 1785008454.933123
+  },
+  "objects/epipette_stand_chargeable/epipette_stand_chargeable.object_model.yaml": {
+    "blob_sha": "e9f912af4d9076d07a39c7b2f0f89cadedbd80d3d30f4b4105b4ff2d688f725a",
+    "mode": "blob",
+    "mtime": 1785008454.9332707
+  },
+  "objects/epipette_stand_chargeable/epipette_stand_chargeable.urdf": {
+    "blob_sha": "997df4cdcb6b37c7720fab71dcdcb16efe9cefb272c8d717521791d8b47ca1b7",
+    "mode": "blob",
+    "mtime": 1785008454.9333646
+  },
+  "objects/fixture_plate/fixture_plate.object_model.yaml": {
+    "blob_sha": "f753c95288876dfb9da1caa39c50f7dd56e89693d51ecb3737397eac5357f56d",
+    "mode": "blob",
+    "mtime": 1785008454.933516
+  },
+  "objects/fixture_plate/fixture_plate.urdf": {
+    "blob_sha": "4d87fdbcc2b48ab4c644cc6504e0c7344a3e1edaf81658037b5579dea85df3fe",
+    "mode": "blob",
+    "mtime": 1785008454.9335961
+  },
+  "objects/pipette_stand/pipette_stand.object_model.yaml": {
+    "blob_sha": "3dc21642d43ee9260f97c0eead33a205ee7ba12d5533f240917c18cc963803e4",
+    "mode": "blob",
+    "mtime": 1785008454.9337301
+  },
+  "objects/pipette_stand/pipette_stand.urdf": {
+    "blob_sha": "f67d4bb275f0934af84b32ea1fcd902c40fba5f47b5ebcc085c9703d875950c6",
+    "mode": "blob",
+    "mtime": 1785008454.9338226
+  },
+  "objects/plate_reader/plate_reader.object_model.yaml": {
+    "blob_sha": "a4e48355dabbd064fc9444b383ee7e6ae8e97defc1e9f97d63f153493edb9799",
+    "mode": "blob",
+    "mtime": 1785008454.934037
+  },
+  "objects/plate_reader/plate_reader.urdf": {
+    "blob_sha": "f476c56e034f809e2ac74f63678634593c9ffff3a9ad3063ffa85ac51d999bbf",
+    "mode": "blob",
+    "mtime": 1785008454.934142
+  },
+  "objects/plate_stand_holder/plate_stand_holder.object_model.yaml": {
+    "blob_sha": "6383587637a265c1ebfa20373ed38287f5ad6bc8449269d2d80c50cfadb9cc2d",
+    "mode": "blob",
+    "mtime": 1785008454.9342837
+  },
+  "objects/plate_stand_holder/plate_stand_holder.urdf": {
+    "blob_sha": "2f66ab146b347fb34aac8daa3d3e4694d88fa4e28f7963c579c83749fecd4733",
+    "mode": "blob",
+    "mtime": 1785008454.9343727
+  },
+  "objects/platefuge/platefuge.object_model.yaml": {
+    "blob_sha": "3a4d490544065ee513679363a99f0cc6c7a24684c103cfb8c36ce966ff76b5d7",
+    "mode": "blob",
+    "mtime": 1785008454.934559
+  },
+  "objects/platefuge/platefuge.urdf": {
+    "blob_sha": "58f66c68308488f913cc8d3a2b824561c8aa689bac848a33a034cdb41a9ac1da",
+    "mode": "blob",
+    "mtime": 1785008454.934653
+  },
+  "objects/platesealer/platesealer.object_model.yaml": {
+    "blob_sha": "b201906d503444d2732dff0ccab8f271f4156689477653734896dd774b0fdf60",
+    "mode": "blob",
+    "mtime": 1785008454.9347732
+  },
+  "objects/platesealer/platesealer.urdf": {
+    "blob_sha": "158461e40f5ccabe7918134c24e3c5bc7fb5f52c2b3707ed2ef51e6d9444dde5",
+    "mode": "blob",
+    "mtime": 1785008454.9348776
+  },
+  "objects/platesealer_platemax/platesealer_platemax.object_model.yaml": {
+    "blob_sha": "12be37f893656b1389a812b9ccdda56ec98bbeda3c2a3dd8ffcf3b059a745e8e",
+    "mode": "blob",
+    "mtime": 1785008454.935041
+  },
+  "objects/platesealer_platemax/platesealer_platemax.urdf": {
+    "blob_sha": "ae059ee8679e8f9382d11b171ca5b9e2e297a2d35aef1885be5e4a7ba926b823",
+    "mode": "blob",
+    "mtime": 1785008454.9351406
+  },
+  "objects/seal_holder_stacked/seal_holder_stacked.object_model.yaml": {
+    "blob_sha": "8b934ed04a8c913b04de455d2672a19499f89f88c78f309c5b1dbf258ac6f895",
+    "mode": "blob",
+    "mtime": 1785008454.9353426
+  },
+  "objects/seal_holder_stacked/seal_holder_stacked.urdf": {
+    "blob_sha": "d4466aae2918dd9d6bdcc4f9277c32e2e5e40137cfa4c0d16f1e3ec9d1203fea",
+    "mode": "blob",
+    "mtime": 1785008454.9354753
+  },
+  "objects/seal_holder_stacked_reinforced/seal_holder_stacked_reinforced.object_model.yaml": {
+    "blob_sha": "4d0f3363c77143aad3ced8999eb8efdcd62eed7f2b42d95aee150450d5809bf3",
+    "mode": "blob",
+    "mtime": 1785008454.9356818
+  },
+  "objects/seal_holder_stacked_reinforced/seal_holder_stacked_reinforced.urdf": {
+    "blob_sha": "2e99176bb5372424d6e0f97de51f206e1344e8f06e9a6019c2324fa5876b25da",
+    "mode": "blob",
+    "mtime": 1785008454.9357765
+  },
+  "objects/thermoeppendorf/thermoeppendorf.object_model.yaml": {
+    "blob_sha": "7e299ccbbadd8b08bae0a213b81dc077c3b5c0f497d36a4587ebf22c396a493f",
+    "mode": "blob",
+    "mtime": 1785008454.9359133
+  },
+  "objects/thermoeppendorf/thermoeppendorf.urdf": {
+    "blob_sha": "43cf25211c6e1f363d74e94be8e15c9c7e7dae3cececc43bacd134bfa1c09895",
+    "mode": "blob",
+    "mtime": 1785008454.935982
+  },
+  "objects/tipbox_10ul/tipbox_10ul.object_model.yaml": {
+    "blob_sha": "a3956995cd0d22d0c464b7595c75a9bfd9ca6c80ddba8db79c1ae450675e52b1",
+    "mode": "blob",
+    "mtime": 1785010558.165075
+  },
+  "objects/tipbox_10ul/tipbox_10ul.urdf": {
+    "blob_sha": "e2cee826ca011bc86a8901b6bb18eea5702085c37b580fa6956da1164723987e",
+    "mode": "blob",
+    "mtime": 1785010558.1653337
+  },
+  "objects/tipbox_120ul/tipbox_120ul.object_model.yaml": {
+    "blob_sha": "4f08a65aef415c456a7843b19bf7efe0200057ac78d176f23e6547dad6b62801",
+    "mode": "blob",
+    "mtime": 1785010558.1658583
+  },
+  "objects/tipbox_120ul/tipbox_120ul.urdf": {
+    "blob_sha": "af900869d988e4bb1bbd4bfbf897e168f04aeb1f211bffe6b0de8644f440b7e9",
+    "mode": "blob",
+    "mtime": 1785010558.1661825
+  },
+  "objects/tipbox_grey/tipbox_grey.object_model.yaml": {
+    "blob_sha": "390b25c37209508b46b7f6390f82c6c80391034869e7c9ddd5446b668dfe7d2a",
+    "mode": "blob",
+    "mtime": 1785008454.9360983
+  },
+  "objects/tipbox_grey/tipbox_grey.urdf": {
+    "blob_sha": "3fffeaa3d0396b2694a4b2c453ebacfbf67d0e257f72d37b098471f9a7782e89",
+    "mode": "blob",
+    "mtime": 1785008454.9361653
+  },
+  "objects/tipbox_holder_fixture_plate/tipbox_holder_fixture_plate.object_model.yaml": {
+    "blob_sha": "ba20b76bd3844581065e385b58bd7fdef9bf3b8ba959926c7aed7fd25b0e86f6",
+    "mode": "blob",
+    "mtime": 1785008454.9362764
+  },
+  "objects/tipbox_holder_fixture_plate/tipbox_holder_fixture_plate.urdf": {
+    "blob_sha": "d7061b23a8d31d465b13c2ff095934e8848cc1eff38e01ace9b8e523368988bb",
+    "mode": "blob",
+    "mtime": 1785008454.9363427
+  },
+  "objects/wellplate_96_flatbottom/wellplate_96_flatbottom.object_model.yaml": {
+    "blob_sha": "c30660b34c59cc28e1ba5913609bd31445d70af78b33f6dcacafcf0b2ec3fe85",
+    "mode": "blob",
+    "mtime": 1785008454.9365833
+  },
+  "objects/wellplate_96_flatbottom/wellplate_96_flatbottom.urdf": {
+    "blob_sha": "2ed6b173924cd0bea3b5703219737a832efa9c82425eb1743f9aeaab25386e83",
+    "mode": "blob",
+    "mtime": 1785008454.9366922
+  },
+  "objects/wellplate_holder_fixture_plate/wellplate_holder_fixture_plate.object_model.yaml": {
+    "blob_sha": "c26cb4474645c28b62cd6264fb942101a9c7ba8d2a45f5c3554ac88d35d258c5",
+    "mode": "blob",
+    "mtime": 1785008454.936812
+  },
+  "objects/wellplate_holder_fixture_plate/wellplate_holder_fixture_plate.urdf": {
+    "blob_sha": "bf585805a7ca094953df166fde697a920e7dc6ed137438b506cdfa3fb5e2e31c",
+    "mode": "blob",
+    "mtime": 1785008454.9368825
+  },
+  "objects/wellplate_holder_tags/wellplate_holder_tags.object_model.yaml": {
+    "blob_sha": "5f93c447d70f0b52a690b50ec9b40e479cacefd457a1d14bca74fead373a230d",
+    "mode": "blob",
+    "mtime": 1785008454.9370215
+  },
+  "objects/wellplate_holder_tags/wellplate_holder_tags.urdf": {
+    "blob_sha": "fbd5d74fcdeb4d51af22e7ae4a04d03fc21df1086e600aaeaf608cc7d45db307",
+    "mode": "blob",
+    "mtime": 1785008454.9370954
+  },
+  "objects/wellplate_pcr/wellplate_pcr.object_model.yaml": {
+    "blob_sha": "a84a9a2ee53b7cc565281f5d2ce6dc70b9b7af8a14fd6472c6300c56a35da140",
+    "mode": "blob",
+    "mtime": 1785008454.9372194
+  },
+  "objects/wellplate_pcr/wellplate_pcr.urdf": {
+    "blob_sha": "1a1e1360ca9261db6f4d3ea9b2b156c25b07748f2a8674796d4c1a68d2db988a",
+    "mode": "blob",
+    "mtime": 1785008454.9373126
+  },
+  "objects/wellplate_pcr_platestand_holder/wellplate_pcr_platestand_holder.object_model.yaml": {
+    "blob_sha": "b24ac8e0e9c012e5cdba3c5b3d6ff11acbb97ffd9aa88ec43deebaaf78312490",
+    "mode": "blob",
+    "mtime": 1785008454.937445
+  },
+  "objects/wellplate_pcr_platestand_holder/wellplate_pcr_platestand_holder.urdf": {
+    "blob_sha": "9cb99d9d37f412b0cb4859fafdeef9525baa33f7100b5078df4a79e7f1cd8c3f",
+    "mode": "blob",
+    "mtime": 1785008454.9375143
+  },
+  "objects/wellplate_shaker/wellplate_shaker.object_model.yaml": {
+    "blob_sha": "69296da23813244f009fc16c7d0b461983d70d144fc5bce2c8a13206843d64c4",
+    "mode": "blob",
+    "mtime": 1785008454.9376907
+  },
+  "objects/wellplate_shaker/wellplate_shaker.urdf": {
+    "blob_sha": "47aae6c6cbb6e9eb99dc8f6f0adec2358bb6a6811f7409b2ff483d585993b94e",
+    "mode": "blob",
+    "mtime": 1785008454.937785
+  },
+  "objects/wellplate_stand/wellplate_stand.object_model.yaml": {
+    "blob_sha": "9fe948130b7146d7dcb638bdeda059b24f17f1dc0c2c235e1e1a26609a340bef",
+    "mode": "blob",
+    "mtime": 1785008454.9379416
+  },
+  "objects/wellplate_stand/wellplate_stand.urdf": {
+    "blob_sha": "22726ddca8cb5d85146cedc25d9c727153b85612087fdb756efe331806fb8cf5",
+    "mode": "blob",
+    "mtime": 1785008454.9380388
+  },
+  "project.json": {
+    "blob_sha": "3501b464f46a66ef3daddc3c51ba1d26658d704a381e1bb740f3940f483a8aab",
+    "mode": "blob",
+    "mtime": 1785010558.1700463
+  },
+  "pyproject.toml": {
+    "blob_sha": "c21f84bb25389a897fc63a7f29967c742f56c0d9e819ebd1efec0ec47029a22a",
+    "mode": "blob",
+    "mtime": 1785009468.2443485
+  },
+  "skills/.gitkeep": {
+    "blob_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": "blob",
+    "mtime": 1785010558.1702852
+  },
+  "skills/DEPTH_ANCHORS.md": {
+    "blob_sha": "388cb6b983e37c0748bdb778a5f8f0db04b6a657c9ae33bca58602a172c495fc",
+    "mode": "blob",
+    "mtime": 1785008454.938347
+  },
+  "skills/README.md": {
+    "blob_sha": "42f2889f58d21fdb5f385607e09343f3df59c37a44cc6ff9000981506db1818b",
+    "mode": "blob",
+    "mtime": 1785008454.938457
+  },
+  "skills/SNAPPING.md": {
+    "blob_sha": "e8c625f104896902f5a49eac57f5de91c2f0a406ced08622e5b1c57a0380620e",
+    "mode": "blob",
+    "mtime": 1785008454.9385407
+  },
+  "skills/arms_home/metadata.yaml": {
+    "blob_sha": "c7fc26e7ca1c2efdb0476f413aad9300ef5436a2475ee4d600ec7d1413dec593",
+    "mode": "blob",
+    "mtime": 1785008454.939076
+  },
+  "skills/arms_home/modules.py": {
+    "blob_sha": "0c1e952babccfb221777943ea8b09abbb43959bbe23b1844f70d169626773d3c",
+    "mode": "blob",
+    "mtime": 1785008454.9391627
+  },
+  "skills/arms_home/robotic_code.py": {
+    "blob_sha": "3ad3b256cce6b166b9add2ae7b77e4dd4f0aa8147fee9c7f45f6439d2d5e2429",
+    "mode": "blob",
+    "mtime": 1785008454.9392374
+  },
+  "skills/cfps_dispense_mastermix/metadata.yaml": {
+    "blob_sha": "28005f0b36ee1e967dfbe96b27a593241070ffeb0716f7d2cca8a18190502d79",
+    "mode": "blob",
+    "mtime": 1785008454.9393594
+  },
+  "skills/cfps_dispense_mastermix/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.939463
+  },
+  "skills/cfps_dispense_mastermix/robotic_code.py": {
+    "blob_sha": "614b3c5770fd7aa46e6252a5011a44036432c033eba6bfda7713bd83df19bb4c",
+    "mode": "blob",
+    "mtime": 1785008454.9395947
+  },
+  "skills/cfps_log_platemap/metadata.yaml": {
+    "blob_sha": "d0d734c55f881fccd6440cd7981bc1e26145774377d8a07a2fda5181b044fa47",
+    "mode": "blob",
+    "mtime": 1785008454.9397368
+  },
+  "skills/cfps_log_platemap/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9398193
+  },
+  "skills/cfps_log_platemap/robotic_code.py": {
+    "blob_sha": "d8de108aaff43760ee1a18277e89bed1c1173345668f131ef8533a41462bbcd3",
+    "mode": "blob",
+    "mtime": 1785008454.9398906
+  },
+  "skills/cfps_make_mastermix/metadata.yaml": {
+    "blob_sha": "0aa87ff470d0df2249482e9a69ef34d947690c5fc6ad1fbe076f94109ce2ce5b",
+    "mode": "blob",
+    "mtime": 1785008454.9403267
+  },
+  "skills/cfps_make_mastermix/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9404044
+  },
+  "skills/cfps_make_mastermix/robotic_code.py": {
+    "blob_sha": "c137c02f2dadba068c23b8c1e60ccb8128aea1b0540317cf7f321dc5996afc82",
+    "mode": "blob",
+    "mtime": 1785008454.9405234
+  },
+  "skills/epipette_aspirate/metadata.yaml": {
+    "blob_sha": "d5950f8537c8a6d0380fa14c3636f893de90811fd2544c199e2b83528b652a24",
+    "mode": "blob",
+    "mtime": 1785008454.940888
+  },
+  "skills/epipette_aspirate/modules.py": {
+    "blob_sha": "f46b606f30f640f33f6a5a33f8a41184f6cbc8a4977b4c67fa19a1690723f722",
+    "mode": "blob",
+    "mtime": 1785008454.9409733
+  },
+  "skills/epipette_aspirate/robotic_code.py": {
+    "blob_sha": "42953e0dc2c0e5bffb2e05578c1ab752f726c80c549013a541d104bb02c4b112",
+    "mode": "blob",
+    "mtime": 1785008454.9411213
+  },
+  "skills/epipette_aspirate_test/metadata.yaml": {
+    "blob_sha": "b77e14e1d57ff3b823ef3dd7cccd280be3c056808f7e502981557b305cfe7630",
+    "mode": "blob",
+    "mtime": 1785008454.9414184
+  },
+  "skills/epipette_aspirate_test/modules.py": {
+    "blob_sha": "f46b606f30f640f33f6a5a33f8a41184f6cbc8a4977b4c67fa19a1690723f722",
+    "mode": "blob",
+    "mtime": 1785008454.9414928
+  },
+  "skills/epipette_aspirate_test/robotic_code.py": {
+    "blob_sha": "0f3ede761ddd9cdce09af0e8c8f20d5a6503753b50e64f449db67c82ccfdc9f7",
+    "mode": "blob",
+    "mtime": 1785008454.9415681
+  },
+  "skills/epipette_attach/metadata.yaml": {
+    "blob_sha": "7a99bb1430c444032c89c70b0f37eb4e161e4c2a2a4223dc8f1f68199e6c2eec",
+    "mode": "blob",
+    "mtime": 1785008454.9419074
+  },
+  "skills/epipette_attach/modules.py": {
+    "blob_sha": "f46b606f30f640f33f6a5a33f8a41184f6cbc8a4977b4c67fa19a1690723f722",
+    "mode": "blob",
+    "mtime": 1785008454.941989
+  },
+  "skills/epipette_attach/robotic_code.py": {
+    "blob_sha": "aba9a50c7fb1349a87bf6e79724366a9f86f2b9fe68f624d3bb4123617d37856",
+    "mode": "blob",
+    "mtime": 1785008454.9420724
+  },
+  "skills/epipette_attach_test/metadata.yaml": {
+    "blob_sha": "d620f265f6e5cc6e5c5b3c5bd00b6e6b35d61c0cf4f62178140eca776da0870f",
+    "mode": "blob",
+    "mtime": 1785008454.942281
+  },
+  "skills/epipette_attach_test/modules.py": {
+    "blob_sha": "f46b606f30f640f33f6a5a33f8a41184f6cbc8a4977b4c67fa19a1690723f722",
+    "mode": "blob",
+    "mtime": 1785008454.9423528
+  },
+  "skills/epipette_attach_test/robotic_code.py": {
+    "blob_sha": "a1e95eb04211322c945e4afa6ae6f2e94473b210607bae8ddd4a2906463dca21",
+    "mode": "blob",
+    "mtime": 1785008454.9424367
+  },
+  "skills/epipette_dispense/metadata.yaml": {
+    "blob_sha": "3153481a37808a39a8164a0ef04d21da43cf04e3f4f5331b696984e3e1142cf4",
+    "mode": "blob",
+    "mtime": 1785008454.9427218
+  },
+  "skills/epipette_dispense/modules.py": {
+    "blob_sha": "a6481e8cc760012cb86ac30843460e02f50cab3870432492420e93e95c4cfd3b",
+    "mode": "blob",
+    "mtime": 1785008454.9427905
+  },
+  "skills/epipette_dispense/robotic_code.py": {
+    "blob_sha": "6d05d230dc3bcab2c3271ffb70a4f75abe65b881a3edb1710ebcbbf0d1f99f41",
+    "mode": "blob",
+    "mtime": 1785008454.9428866
+  },
+  "skills/epipette_dispense_test/metadata.yaml": {
+    "blob_sha": "edfeeb6bf67982e2d737ce94cccfdc8375a70476fde787ce7cbdfa8e6200451a",
+    "mode": "blob",
+    "mtime": 1785008454.9431753
+  },
+  "skills/epipette_dispense_test/modules.py": {
+    "blob_sha": "f46b606f30f640f33f6a5a33f8a41184f6cbc8a4977b4c67fa19a1690723f722",
+    "mode": "blob",
+    "mtime": 1785008454.9432545
+  },
+  "skills/epipette_dispense_test/robotic_code.py": {
+    "blob_sha": "5746f78f4bdaa70ef98826763611fe6c7d549f56d37ce046f86134875e810ac9",
+    "mode": "blob",
+    "mtime": 1785008454.9433298
+  },
+  "skills/epipette_eject/metadata.yaml": {
+    "blob_sha": "46a469857f355e7d1e28f463818c4632bb8495722e57d46624a430b1b78b53fe",
+    "mode": "blob",
+    "mtime": 1785008454.9436154
+  },
+  "skills/epipette_eject/modules.py": {
+    "blob_sha": "37ec242d66dfcdc87a04ca0f7fe8fbe3b2ca2a0f11d69e0f1c4c91c8202b826a",
+    "mode": "blob",
+    "mtime": 1785008454.9436812
+  },
+  "skills/epipette_eject/robotic_code.py": {
+    "blob_sha": "f434a1fcaa9889aa1dc9a315472823c59104ab824145a01e46cd96869d6cf862",
+    "mode": "blob",
+    "mtime": 1785008454.9437494
+  },
+  "skills/epipette_grab/metadata.yaml": {
+    "blob_sha": "e2068408f63b473f0b90a18f3bc5558f400bad0890b1bcfa639d2ceea915c300",
+    "mode": "blob",
+    "mtime": 1785008454.9438584
+  },
+  "skills/epipette_grab/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9439216
+  },
+  "skills/epipette_grab/robotic_code.py": {
+    "blob_sha": "1eb8a882bf6281e5afb9c2081c0084520779594b77dff660e4e8bf73e9bd3f6d",
+    "mode": "blob",
+    "mtime": 1785008454.944002
+  },
+  "skills/epipette_mix/metadata.yaml": {
+    "blob_sha": "02560be346f8029cc3ec2ca782ef11d5e6e5babb437dad71eb6d5ece51d88ab3",
+    "mode": "blob",
+    "mtime": 1785008454.9442987
+  },
+  "skills/epipette_mix/modules.py": {
+    "blob_sha": "59f11f3926870383b37e443d6960ae043648b8aa22b2a3d3a1c8271ec8e7a2d9",
+    "mode": "blob",
+    "mtime": 1785008454.9443579
+  },
+  "skills/epipette_mix/robotic_code.py": {
+    "blob_sha": "09adec24025240dbbf83b9a12b0be0dc24401bc9f7f93cfcbd097afe97759d7c",
+    "mode": "blob",
+    "mtime": 1785008454.9444213
+  },
+  "skills/epipette_place/metadata.yaml": {
+    "blob_sha": "b71f2dc9552d0fb9478b938c8650e5261405bbf8e9be13cc6a35ca72741a39ad",
+    "mode": "blob",
+    "mtime": 1785008454.9445174
+  },
+  "skills/epipette_place/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.944571
+  },
+  "skills/epipette_place/robotic_code.py": {
+    "blob_sha": "4a7765a4058f426c0b50e82518d8bf86632c4248eff381438d2a48bbe4ce0b56",
+    "mode": "blob",
+    "mtime": 1785008454.944661
+  },
+  "skills/epipette_tip_check/metadata.yaml": {
+    "blob_sha": "70f5231f1aa05f989ef3b7d6bf1907525d7b91642cc3fdd2f21846ae4552cd39",
+    "mode": "blob",
+    "mtime": 1785008454.9447927
+  },
+  "skills/epipette_tip_check/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9448626
+  },
+  "skills/epipette_tip_check/robotic_code.py": {
+    "blob_sha": "a51d7d0c757068d8cd5096ad0ebe767aa80f778df076c873f7e5fc5b472a1fb4",
+    "mode": "blob",
+    "mtime": 1785008454.9449353
+  },
+  "skills/place_current_pipette/metadata.yaml": {
+    "blob_sha": "9e7856b1d529e8d875b71078ac7a6fd4e8c638828c1b107136c1f0de56e6b8e5",
+    "mode": "blob",
+    "mtime": 1785008454.945038
+  },
+  "skills/place_current_pipette/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9451
+  },
+  "skills/place_current_pipette/robotic_code.py": {
+    "blob_sha": "1872c31e0c64a8b8f5600b67cea10dc7ba038823571a624ba857df8bfaeded88",
+    "mode": "blob",
+    "mtime": 1785008454.9451637
+  },
+  "skills/plate_unseal/metadata.yaml": {
+    "blob_sha": "1e054b3fa595162f5b01400ac0283a4ae3a124d170598af309cd8215b846195f",
+    "mode": "blob",
+    "mtime": 1785008454.9452617
+  },
+  "skills/plate_unseal/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9453177
+  },
+  "skills/plate_unseal/robotic_code.py": {
+    "blob_sha": "9502b269a0cb1d72fd7e00f01d07006704ba203ddb2f3ab8f83acecfb18a2044",
+    "mode": "blob",
+    "mtime": 1785008454.9453793
+  },
+  "skills/platereader_closed/metadata.yaml": {
+    "blob_sha": "804a1e971893bba09fcab13a488965f40b8e830ef3343bd51d9fd6ba38a1ac7d",
+    "mode": "blob",
+    "mtime": 1785008454.9454875
+  },
+  "skills/platereader_closed/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.945551
+  },
+  "skills/platereader_closed/robotic_code.py": {
+    "blob_sha": "d380ed78701a25faec23395590a6a44eece0938ccf58513ee55ca6d31a13d5cf",
+    "mode": "blob",
+    "mtime": 1785008454.9456627
+  },
+  "skills/platereader_load/metadata.yaml": {
+    "blob_sha": "89efa2591815e71bf97ceb6fa1ac441a747259da6d7dde0b03156dc25e83135f",
+    "mode": "blob",
+    "mtime": 1785008454.9457886
+  },
+  "skills/platereader_load/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9458706
+  },
+  "skills/platereader_load/robotic_code.py": {
+    "blob_sha": "1f3d8a6d6f1cc46962430fb0829806e178ef0127de75815b5ccd723c978468a2",
+    "mode": "blob",
+    "mtime": 1785008454.9459598
+  },
+  "skills/platereader_measure/metadata.yaml": {
+    "blob_sha": "60d0394bf17e152461d0ea89fb029603e3044cb84bf649019021cb989ed2f961",
+    "mode": "blob",
+    "mtime": 1785008454.9463167
+  },
+  "skills/platereader_measure/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9464126
+  },
+  "skills/platereader_measure/robotic_code.py": {
+    "blob_sha": "82f8673ba353240f226958ad1e93d48145747efdf38ced0a68a7d1c23c8a57ea",
+    "mode": "blob",
+    "mtime": 1785008454.9465177
+  },
+  "skills/platereader_open/metadata.yaml": {
+    "blob_sha": "f26c3c6dc233e7d13f84d3ec2a3980add71dfa250bc1334d155d2a289faca4e8",
+    "mode": "blob",
+    "mtime": 1785008454.9466588
+  },
+  "skills/platereader_open/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.946739
+  },
+  "skills/platereader_open/robotic_code.py": {
+    "blob_sha": "ff464db4be0e9fb13a40c0feb439cf1a05ded02d12e0c0f86858830590b9c558",
+    "mode": "blob",
+    "mtime": 1785008454.9468372
+  },
+  "skills/platereader_unload/metadata.yaml": {
+    "blob_sha": "3a5d5d709d326872c7c93f1cf6e4337217816bb6bf73e07bfd5a50b7a91ff446",
+    "mode": "blob",
+    "mtime": 1785008454.9469585
+  },
+  "skills/platereader_unload/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9470327
+  },
+  "skills/platereader_unload/robotic_code.py": {
+    "blob_sha": "6dc9a60e24b83b31494194961e7d5b551acb55805eaa30c89ea240be2a259aa5",
+    "mode": "blob",
+    "mtime": 1785008454.947114
+  },
+  "skills/platesealer_pick_seal/metadata.yaml": {
+    "blob_sha": "3d85361c04ce30bd036b97a243428bdd1295a2c058e1bb22a6d3e96347cdd1f5",
+    "mode": "blob",
+    "mtime": 1785008454.9472365
+  },
+  "skills/platesealer_pick_seal/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9473138
+  },
+  "skills/platesealer_pick_seal/robotic_code.py": {
+    "blob_sha": "e9c5dc1bcf994dfe2c05d47e8b8dc3f6d211924d8ac2e7281dac9fdf5ec868e6",
+    "mode": "blob",
+    "mtime": 1785008454.9474108
+  },
+  "skills/platesealer_platemax_door/metadata.yaml": {
+    "blob_sha": "6bde8b54d9411404cb9020c661f602aa8c4eb54fb250943eaa87d485e2829779",
+    "mode": "blob",
+    "mtime": 1785008454.947543
+  },
+  "skills/platesealer_platemax_door/robotic_code.py": {
+    "blob_sha": "be6ac37237b967d5b90b96d07a6bf0f0fcfb31b8a97493ec05d1fa57bcb1f060",
+    "mode": "blob",
+    "mtime": 1785008454.9476244
+  },
+  "skills/platesealer_platemax_load/metadata.yaml": {
+    "blob_sha": "8696db4d9477dd337ff257299ca5bd7231dc01f073fecf0bb3a8ed50f85bf04c",
+    "mode": "blob",
+    "mtime": 1785008454.9477458
+  },
+  "skills/platesealer_platemax_load/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9478207
+  },
+  "skills/platesealer_platemax_load/robotic_code.py": {
+    "blob_sha": "72b01be18551d01679ad890b4827bdbe3d6329cee085f6a39512f06df12395b9",
+    "mode": "blob",
+    "mtime": 1785008454.947907
+  },
+  "skills/platesealer_platemax_place_seal/metadata.yaml": {
+    "blob_sha": "8cfd95863632841b375f8e3ed9a622db3f82e7e7d328ac0ec03ed83c0e2ed25c",
+    "mode": "blob",
+    "mtime": 1785008454.948029
+  },
+  "skills/platesealer_platemax_place_seal/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.948108
+  },
+  "skills/platesealer_platemax_place_seal/robotic_code.py": {
+    "blob_sha": "8a48bd237fea852d74d36bffa55b17bf3c18271a5dd851ab16325e4caff8326c",
+    "mode": "blob",
+    "mtime": 1785008454.9481993
+  },
+  "skills/platesealer_platemax_seal/metadata.yaml": {
+    "blob_sha": "ff1709347ca5aafc525873898be8f31dcb5f42d5264a7c92b209da39d2e47a4e",
+    "mode": "blob",
+    "mtime": 1785008454.948344
+  },
+  "skills/platesealer_platemax_seal/robotic_code.py": {
+    "blob_sha": "33151f99f2f15df2c2299f47bb9f633ff741196e5042c358bb2556d83df2a4f4",
+    "mode": "blob",
+    "mtime": 1785008454.9484339
+  },
+  "skills/platesealer_platemax_unload/metadata.yaml": {
+    "blob_sha": "41c612df7ab4a1e64d1b42e5afcd70d42b4502f253cec4fb5b9fa7b90810345a",
+    "mode": "blob",
+    "mtime": 1785008454.948552
+  },
+  "skills/platesealer_platemax_unload/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9486332
+  },
+  "skills/platesealer_platemax_unload/robotic_code.py": {
+    "blob_sha": "5cf12516acdbe53ef8a68d3bb937389ed7c71a2d3210a50d7290f0256130ab53",
+    "mode": "blob",
+    "mtime": 1785008454.9487374
+  },
+  "skills/project.json": {
+    "blob_sha": "36a8e9984b2a5e938cf5f51e1c53511d8e5d57a1759e147abcf666f6b0b8cc32",
+    "mode": "blob",
+    "mtime": 1785008454.9381297
+  },
+  "skills/save_run_folder/metadata.yaml": {
+    "blob_sha": "320d868c45460eab756e7776a7b31387aaf96b9e4141ccb431df8102069719ef",
+    "mode": "blob",
+    "mtime": 1785008454.948862
+  },
+  "skills/save_run_folder/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9489355
+  },
+  "skills/save_run_folder/robotic_code.py": {
+    "blob_sha": "1279cd043a932b36fe640906ffc3522f0aed5abef91f5ef87773420573ab0369",
+    "mode": "blob",
+    "mtime": 1785008454.9490232
+  },
+  "skills/seal_plate/metadata.yaml": {
+    "blob_sha": "78985c58afe8d3da620be90ef86c9ee9ecb00b3b8c66da50ea829f00f5f689ed",
+    "mode": "blob",
+    "mtime": 1785008454.9491487
+  },
+  "skills/seal_plate/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9492307
+  },
+  "skills/seal_plate/robotic_code.py": {
+    "blob_sha": "1fd61cd9ffbf64ffa3a76db2ca6ca6bb8fc7fe34bc01808eee46f375321511ce",
+    "mode": "blob",
+    "mtime": 1785008454.949316
+  },
+  "skills/utils.py": {
+    "blob_sha": "0e87776108d20480ee8260de9fcca54a52f4a18614fbe04d888d9f4f78dc6a0d",
+    "mode": "blob",
+    "mtime": 1785008454.9494524
+  },
+  "skills/wellplate_drop/metadata.yaml": {
+    "blob_sha": "013b98d2aaed40acd3116d050b97a5fa6123c6b5f7b75d9fc55abf03b3caa5e5",
+    "mode": "blob",
+    "mtime": 1785008454.949582
+  },
+  "skills/wellplate_drop/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9496608
+  },
+  "skills/wellplate_drop/robotic_code.py": {
+    "blob_sha": "353e3cc3df07b1e1ce8b03ab4df6160b804e2531f302af82750d41cd2f4aa92a",
+    "mode": "blob",
+    "mtime": 1785008454.9497519
+  },
+  "skills/wellplate_grab/metadata.yaml": {
+    "blob_sha": "1f4580aa4cf73d70f833b22b49294798313a311a3683e0ac915a9e2bd6c4c552",
+    "mode": "blob",
+    "mtime": 1785008454.9498665
+  },
+  "skills/wellplate_grab/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.949942
+  },
+  "skills/wellplate_grab/robotic_code.py": {
+    "blob_sha": "d1cbf878330e5b385780a776d5cf468ae068bf7006d16b3995dd777bf0a1879b",
+    "mode": "blob",
+    "mtime": 1785008454.9500275
+  },
+  "skills/wellplate_shaker_close/metadata.yaml": {
+    "blob_sha": "49601f3f3568b21ed2260423e3e6516b1ab5704907918fb5892e8807a05d7f2a",
+    "mode": "blob",
+    "mtime": 1785008454.9502041
+  },
+  "skills/wellplate_shaker_close/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9503217
+  },
+  "skills/wellplate_shaker_close/robotic_code.py": {
+    "blob_sha": "48cc9a8810c6a7dc4484f1a63bb871072832c137c8a979567c98138fe24acb35",
+    "mode": "blob",
+    "mtime": 1785008454.9504144
+  },
+  "skills/wellplate_shaker_load/metadata.yaml": {
+    "blob_sha": "7df1f25c7372e061581c936ee664bfaf14bffe5e35998581504e900df359cf86",
+    "mode": "blob",
+    "mtime": 1785008454.9505405
+  },
+  "skills/wellplate_shaker_load/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.950617
+  },
+  "skills/wellplate_shaker_load/robotic_code.py": {
+    "blob_sha": "c7bd8e4ae86a4225b6541c17b6549991ebab7ebe62dd7ebb1b8f7327ca25f497",
+    "mode": "blob",
+    "mtime": 1785008454.9507103
+  },
+  "skills/wellplate_shaker_open/metadata.yaml": {
+    "blob_sha": "284ca224aba6dcb37c193c9f93a0aaf3e16ce56152aacd8850d1134cf3472091",
+    "mode": "blob",
+    "mtime": 1785008454.950838
+  },
+  "skills/wellplate_shaker_open/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9509137
+  },
+  "skills/wellplate_shaker_open/robotic_code.py": {
+    "blob_sha": "66c426f15fc6e70bc49ed50f78e626027c9df4dd6fabc6ab3a5f2ac658e4b57e",
+    "mode": "blob",
+    "mtime": 1785008454.9509947
+  },
+  "skills/wellplate_shaker_run/metadata.yaml": {
+    "blob_sha": "a7bde6b3a42287f54c43753a1314e720f993cf869086073b89b2a0d0080a8ceb",
+    "mode": "blob",
+    "mtime": 1785008454.951116
+  },
+  "skills/wellplate_shaker_run/robotic_code.py": {
+    "blob_sha": "69e2c236325933cf0bc8e829920eaf4da26a6fb3a3ddadc194879f80f332865d",
+    "mode": "blob",
+    "mtime": 1785008454.9511924
+  },
+  "skills/wellplate_shaker_set_state/metadata.yaml": {
+    "blob_sha": "5cc24f26e3198e65c72691dea9cfba5eb58d6f2bdb59cf20d41e15a6916d9fa6",
+    "mode": "blob",
+    "mtime": 1785008454.9513223
+  },
+  "skills/wellplate_shaker_set_state/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.951409
+  },
+  "skills/wellplate_shaker_set_state/robotic_code.py": {
+    "blob_sha": "2fca5ae805d033a6a2bd08462c3079bf37750a8e717e5e98a0c1b9b60ae3cea2",
+    "mode": "blob",
+    "mtime": 1785008454.9515471
+  },
+  "skills/wellplate_shaker_unload/metadata.yaml": {
+    "blob_sha": "5c2c279b279fea430b1d508bd0aeff93fb615d01f8f917f263de232e0931b70a",
+    "mode": "blob",
+    "mtime": 1785008454.9517028
+  },
+  "skills/wellplate_shaker_unload/modules.py": {
+    "blob_sha": "c2a18671c1c51031e77ac99b55fb0ab10e3ebec61d7fecc953c8575435030421",
+    "mode": "blob",
+    "mtime": 1785008454.9517572
+  },
+  "skills/wellplate_shaker_unload/robotic_code.py": {
+    "blob_sha": "a3127fee9a093a427c43d13a2d558abf031a0057113b68a29bfa98299c2ed197",
+    "mode": "blob",
+    "mtime": 1785008454.9518542
+  },
+  "uv.lock": {
+    "blob_sha": "7b1d0d95496e888ef4c2f5ad8049817ce5a5e6bb485ed7e5985ac2c42ba5b54f",
+    "mode": "blob",
+    "mtime": 1785009297.8189187
+  },
+  "workflows/.gitkeep": {
+    "blob_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": "blob",
+    "mtime": 1785010558.1782448
+  },
+  "workflows/cfps_mastermix.json": {
+    "blob_sha": "5248647f3441c6c304f2f74fa2d5da28f96697928dbedf1fb7766941b8f9ba08",
+    "mode": "blob",
+    "mtime": 1785010968.0700047
+  },
+  "workflows/pipette_demo.json": {
+    "blob_sha": "7f2e50c8b5441d9d87c8fabc342b8ce95b4d7f09ee760c019072ff7df9aa342f",
+    "mode": "blob",
+    "mtime": 1785010558.178612
+  },
+  "worlds/.DS_Store": {
+    "blob_sha": "a62a99bbe0a067d931baa7cd3f0a2aa1ccc2a3eccc4577e396ba06e68991bd83",
+    "mode": "blob",
+    "mtime": 1785010781.0413213
+  },
+  "worlds/.gitkeep": {
+    "blob_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": "blob",
+    "mtime": 1785010558.1788754
+  },
+  "worlds/hack_world_22/blox_tsdf.npz": {
+    "blob_sha": "41cf854c079994f9a476b3ab3a42599e8f29993412d0e972c23fc5e2bda082c1",
+    "mode": "blob",
+    "mtime": 1785008454.9533272
+  },
+  "worlds/hack_world_22/blox_voxels.npz": {
+    "blob_sha": "ed41b62c23883574c91d3791043f300fdbd2557ae8dabbb88dce4c32e3e0050f",
+    "mode": "blob",
+    "mtime": 1785008454.9536152
+  },
+  "worlds/hack_world_22/live_state.yaml": {
+    "blob_sha": "f40fdf2caa654e662853d14c831763f3e0fa93f1442e7304ad80d41c75ac041b",
+    "mode": "blob",
+    "mtime": 1785008454.9537723
+  },
+  "worlds/hack_world_22/world_state.json": {
+    "blob_sha": "fc1eb177ebbfcee1a67f338172af96ba3ef7053b81bcebb69cef94e2a0975bde",
+    "mode": "blob",
+    "mtime": 1785008454.9539025
+  },
+  "worlds/pipette_demo_world/live_state.yaml": {
+    "blob_sha": "5a6b7734e5afa942bd7758a596d8f34822bf63a2ac416820d4f83e97ff29e39b",
+    "mode": "blob",
+    "mtime": 1785010558.1792588
+  },
+  "worlds/pipette_demo_world/world_state.json": {
+    "blob_sha": "a1e3fd812bcc8865fd276ca3acca831fe8d2b1084f9e113554b5c0f953b20684",
+    "mode": "blob",
+    "mtime": 1785010558.1797414
+  }
+}
