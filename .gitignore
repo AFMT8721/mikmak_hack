@@ -24,6 +24,7 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+graphify-out/
 MANIFEST
 
 # PyInstaller
@@ -216,3 +217,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
