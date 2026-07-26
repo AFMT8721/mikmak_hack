@@ -40,9 +40,18 @@ WELL_ORDER = [f"{r}{c}" for r in _ROWS for c in range(1, 13)]
 DEFAULT_ENZYME_NM = [10.0, 50.0, 250.0]
 DEFAULT_NITROCEFIN_UM = [50.0, 150.0, 450.0]
 DEFAULT_TOTAL_WELL_VOLUME_UL = 20.0
-# PLACEHOLDER stock concentrations the operator's tubes are assumed prepped at.
-ENZYME_STOCK_NM = 1000.0
-NITROCEFIN_STOCK_UM = 1000.0
+# The tubes this bench actually draws from, per
+# tem1_kinetics_dilution_and_dosing_calculations.pdf: a single enzyme_hole (EZ3)
+# and a single substrate_hole (NC4), reused for every leg — there is no per-point
+# tube swapping in the workflow graph, so concentration comes from volume alone.
+ENZYME_STOCK_NM = 5.5363     # EZ3, 0.16 ng/uL
+NITROCEFIN_STOCK_UM = 125.0  # NC4
+
+# The deck's single 10 uL epipette. `epipette_aspirate` is one plunger stroke per
+# call with no auto-chunking, so a leg outside this range is not a rounding issue
+# — it is a leg the hardware cannot pipette.
+PIPETTE_MIN_UL = 0.5
+PIPETTE_MAX_UL = 10.0
 
 
 def _dilution_vol(target_conc: float, stock_conc: float, total_vol_ul: float) -> float:
@@ -110,6 +119,100 @@ def plan_kinetics_round(
         values[f"{blank_name}_buffer_tip_index"] = tip + 1
         tip += 2
 
+    return values
+
+
+def _check_leg(label: str, vol_ul: float) -> None:
+    """A leg is either not pipetted at all, or within one stroke of the epipette."""
+    if vol_ul == 0:
+        return
+    if not (PIPETTE_MIN_UL <= vol_ul <= PIPETTE_MAX_UL):
+        raise ValueError(
+            f"{label} = {vol_ul} uL is outside the epipette's {PIPETTE_MIN_UL}-{PIPETTE_MAX_UL} uL "
+            "single-stroke range — the hardware cannot pipette this leg"
+        )
+
+
+def plan_kinetics_round_by_volume(
+    enzyme_vols_ul: list[float] | None = None,
+    substrate_vols_ul: list[float] | None = None,
+    total_well_volume_ul: float = DEFAULT_TOTAL_WELL_VOLUME_UL,
+    blank_vol_ul: float = 10.0,
+) -> dict:
+    """Build the kinetics input preset from *volumes* rather than target
+    concentrations — the form a dosing table from the protocol doc is written in.
+
+    Same 3x3 grid, wells, and tip order as `plan_kinetics_round`; only the way the
+    volumes are arrived at differs. Buffer tops each well up to
+    `total_well_volume_ul`, and every leg is checked against the pipette's real
+    range before it can become a workflow default, so a misread row fails here
+    rather than on the deck.
+
+    Reports the resulting in-well concentrations so the caller can check them
+    against whatever the source document claims.
+    """
+    enzyme_vols_ul = enzyme_vols_ul or [5.0, 7.0, 9.0]
+    substrate_vols_ul = substrate_vols_ul or [5.0, 7.0, 9.0]
+    if len(enzyme_vols_ul) != 3 or len(substrate_vols_ul) != 3:
+        raise ValueError("tem1_kinetics_characterization.json's graph is fixed at a 3x3 grid")
+
+    values: dict = {
+        "reagent_block": "coldblock_wellplate",
+        "reaction_plate": "wellplate_96_flatbottom",
+        "enzyme_hole": "hole_1",
+        "substrate_hole": "hole_2",
+        "buffer_hole": "hole_3",
+        "total_well_volume_ul": total_well_volume_ul,
+        "run_name": "tem1_kinetics_run",
+    }
+    concentrations = {}
+
+    wells = iter(WELL_ORDER)
+    tip = 1
+    for i, e_vol in enumerate(enzyme_vols_ul, start=1):
+        for j, s_vol in enumerate(substrate_vols_ul, start=1):
+            pos = f"pt_e{i}s{j}"
+            buf_vol = round(total_well_volume_ul - e_vol - s_vol, 3)
+            _check_leg(f"{pos} enzyme", e_vol)
+            _check_leg(f"{pos} substrate", s_vol)
+            _check_leg(f"{pos} buffer", buf_vol)
+            if buf_vol < 0:
+                raise ValueError(
+                    f"{pos}: enzyme {e_vol} + substrate {s_vol} exceeds the "
+                    f"{total_well_volume_ul} uL well"
+                )
+            well = next(wells)
+            values[f"{pos}_well"] = well
+            values[f"{pos}_enzyme_vol_ul"] = e_vol
+            values[f"{pos}_enzyme_tip_index"] = tip
+            values[f"{pos}_substrate_vol_ul"] = s_vol
+            values[f"{pos}_substrate_tip_index"] = tip + 1
+            values[f"{pos}_buffer_vol_ul"] = buf_vol
+            values[f"{pos}_buffer_tip_index"] = tip + 2
+            concentrations[pos] = {
+                "well": well,
+                "enzyme_nm": round(ENZYME_STOCK_NM * e_vol / total_well_volume_ul, 4),
+                "nitrocefin_um": round(NITROCEFIN_STOCK_UM * s_vol / total_well_volume_ul, 4),
+            }
+            tip += 3
+
+    # blank_e: enzyme, no substrate. blank_s: substrate, no enzyme. Each has two
+    # legs summing to the well volume, so the split is forced once blank_vol is set.
+    for blank_name in ("blank_e", "blank_s"):
+        buf_vol = round(total_well_volume_ul - blank_vol_ul, 3)
+        _check_leg(f"{blank_name} reagent", blank_vol_ul)
+        _check_leg(f"{blank_name} buffer", buf_vol)
+        well = next(wells)
+        values[f"{blank_name}_well"] = well
+        values[f"{blank_name}_vol_ul"] = blank_vol_ul
+        values[f"{blank_name}_tip_index"] = tip
+        values[f"{blank_name}_buffer_vol_ul"] = buf_vol
+        values[f"{blank_name}_buffer_tip_index"] = tip + 1
+        concentrations[blank_name] = {"well": well, "vol_ul": blank_vol_ul}
+        tip += 2
+
+    values["_concentrations"] = concentrations
+    values["_stocks"] = {"enzyme_nm": ENZYME_STOCK_NM, "nitrocefin_um": NITROCEFIN_STOCK_UM}
     return values
 
 
@@ -217,6 +320,13 @@ def plan_and_record_kinetics_round(**kwargs) -> bw.Round:
     return round_
 
 
+def plan_and_record_kinetics_round_by_volume(**kwargs) -> bw.Round:
+    values = plan_kinetics_round_by_volume(**kwargs)
+    round_ = bw.create_round("kinetics", objective="TEM1 kinetics characterization")
+    write_round_inputs(round_.id, values)
+    return round_
+
+
 def plan_and_record_inhibitor_round(**kwargs) -> bw.Round:
     values = plan_inhibitor_round(**kwargs)
     compound_id = kwargs["compound"]["compound_id"]
@@ -245,6 +355,39 @@ def plan_kinetics_round_tool(
         enzyme_levels_nm=enzyme_levels_nm, nitrocefin_levels_um=nitrocefin_levels_um,
     )
     return {"round_id": round_.id, "assay_type": round_.assay_type}
+
+
+def plan_kinetics_round_by_volume_tool(
+    enzyme_vols_ul: list[float] = None,
+    substrate_vols_ul: list[float] = None,
+    total_well_volume_ul: float = 20.0,
+    blank_vol_ul: float = 10.0,
+) -> dict:
+    """Plan a kinetics round from an explicit per-leg dosing table — the form a
+    protocol document states it in — instead of from target concentrations.
+
+    Pass the 3 enzyme leg volumes and 3 substrate leg volumes in uL; the grid is
+    their cross product, buffer tops each well up to total_well_volume_ul, and
+    wells/tip indices are assigned in plate scan and execution order. Every leg is
+    validated against the epipette's 0.5-10 uL single-stroke range and raises if a
+    transcribed number is unrunnable.
+
+    Returns the round id plus the in-well concentrations the volumes work out to,
+    so they can be checked against what the source document claims.
+    """
+    round_ = plan_and_record_kinetics_round_by_volume(
+        enzyme_vols_ul=enzyme_vols_ul,
+        substrate_vols_ul=substrate_vols_ul,
+        total_well_volume_ul=total_well_volume_ul,
+        blank_vol_ul=blank_vol_ul,
+    )
+    preset = json.loads((INPUTS_DIR / f"{round_.id}.json").read_text())
+    return {
+        "round_id": round_.id,
+        "assay_type": round_.assay_type,
+        "concentrations": preset["_concentrations"],
+        "stocks": preset["_stocks"],
+    }
 
 
 def plan_inhibitor_round_tool(

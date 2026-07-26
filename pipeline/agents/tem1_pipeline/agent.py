@@ -37,6 +37,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "pipeline" / "agents"))
 import analyze_agent as analyze  # noqa: E402
 import beads_writer as bw  # noqa: E402
 import plan_agent as plan  # noqa: E402
+import protocol_docs  # noqa: E402
 import simulate as sim  # noqa: E402
 import watch_execution as watch  # noqa: E402
 import zeon_sync as zs  # noqa: E402
@@ -123,6 +124,19 @@ SHARED_TOOLS = [list_rounds_tool, round_status_tool]
 
 # --- Plan -----------------------------------------------------------------------
 
+def read_protocol_document_tool(path: str) -> dict:
+    """Read a protocol document — a dosing table, dilution scheme, or kit insert —
+    and return its text.
+
+    Takes a filesystem path (PDF, txt, md, csv, json, yaml). You have NO other way
+    to see a file's contents: a path in the conversation is just a string until
+    this tool returns its text. Read the document before planning from it, and
+    transcribe its numbers into plan_kinetics_round_by_volume_tool rather than
+    stating them as done.
+    """
+    return protocol_docs.read_document(path)
+
+
 def list_compound_library_tool() -> dict:
     """The compound library available to screen, from
     pipeline/library/compounds.csv, marked with which ones already have a
@@ -146,9 +160,12 @@ planner = Agent(
         "You plan rounds of a TEM1 beta-lactamase screening campaign.\n"
         "Round types:\n"
         "1. kinetics — prerequisite. A purified-TEM1 x nitrocefin grid, read kinetically. Its "
-        "fit sets the nitrocefin working concentration everything downstream uses. Call "
-        "plan_kinetics_round_tool with no arguments for the default coarse grid, or with "
-        "exactly 3 enzyme levels (nM) and 3 nitrocefin levels (uM) for a specific range.\n"
+        "fit sets the nitrocefin working concentration everything downstream uses. Two ways "
+        "to plan it: plan_kinetics_round_tool takes target concentrations (3 enzyme levels in "
+        "nM, 3 nitrocefin levels in uM) and derives volumes from the stock tubes; "
+        "plan_kinetics_round_by_volume_tool takes the per-leg volumes directly, which is the "
+        "form a protocol document's dosing table is written in. Prefer the by-volume tool "
+        "whenever the operator has given you a document or explicit volumes.\n"
         "2. inhibitor_dose_response — one compound dosed across confirmed-expressed wells. "
         "Needs the operator to name which wells on the current CFPS plate came back "
         "confirmed-expressed from a cfps_expression round. Use list_compound_library_tool to "
@@ -158,14 +175,27 @@ planner = Agent(
         "cfps_mastermix canvas. Say so if asked.\n\n"
         "Before planning a dose-response round, check with list_rounds_tool that a kinetics "
         "round has reached stage 'decided'; if none has, say so and offer to plan the "
-        "kinetics round first rather than silently proceeding.\n"
+        "kinetics round first rather than silently proceeding.\n\n"
+        "WORKING FROM A DOCUMENT: when the operator gives you a file path, that path is only "
+        "a string to you — you cannot see the contents until read_protocol_document_tool "
+        "returns them. Read it, transcribe the dosing table into "
+        "plan_kinetics_round_by_volume_tool, and then compare the in-well concentrations that "
+        "tool returns against what the document claims. If they disagree, say so — a mismatch "
+        "means you misread a row or the document's stocks differ from this bench's.\n\n"
+        "NEVER state that a file, workflow, or preset has been changed unless a tool call in "
+        "this conversation returned that change. You have no ability to edit files by "
+        "describing an edit. Planning writes a preset only; nothing reaches the workflow until "
+        "the syncer bakes it, and nothing reaches the Zeon app until it is pushed. Say exactly "
+        "which of those has happened.\n"
         "After planning, read the preset back with show_round_inputs_tool, report the "
-        "round_id and the key conditions (concentrations, well count, run_name), and tell the "
-        "operator the next step is Sync — nothing has reached the Zeon app yet."
+        "round_id and the key conditions (volumes, concentrations, well count, run_name), and "
+        "tell the operator the next step is Sync — nothing has reached the Zeon app yet."
     ),
     tools=[
         plan.plan_kinetics_round_tool,
+        plan.plan_kinetics_round_by_volume_tool,
         plan.plan_inhibitor_round_tool,
+        read_protocol_document_tool,
         list_compound_library_tool,
         show_round_inputs_tool,
         note_on_round_tool,
@@ -234,6 +264,10 @@ syncer = Agent(
         "Pushing is outward-facing and shared: it changes what the cloud project shows "
         "everyone. NEVER call zeon_push_tool without the operator saying to push in this "
         "conversation. Approval to push one round is not approval to push the next.\n"
+        "Report only what the tools returned: bake_round_into_workflow_tool's changed_count "
+        "and zeon_push_tool's output are your evidence. Never say a workflow was updated, "
+        "synced, or pushed without the corresponding tool result in this conversation — if "
+        "changed_count is 0, nothing changed, and you say that.\n"
         "If baking raises about preset keys with no matching workflow input, do not work "
         "around it — report it plainly. It means the plan and the workflow graph have drifted "
         "and the operator would otherwise run a different plate than the round claims."
