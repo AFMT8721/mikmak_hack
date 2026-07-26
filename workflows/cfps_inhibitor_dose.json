@@ -192,5 +192,12 @@
 
     { "edge_id": "e_place_pipette_save_run", "from_node": "place_pipette", "to_node": "save_run", "condition": { "type": "on_success" } },
     { "edge_id": "e_save_run_end_1", "from_node": "save_run", "to_node": "end_1", "condition": { "type": "on_success" } }
-  ]
+  ],
+  "canvas_ui": {
+    "kind": "react",
+    "source_ref": "canvas/cfps_inhibitor_dose_screen.tsx",
+    "enabled": true,
+    "version": 1,
+    "updated_at": "2026-07-26T00:00:00.000Z"
+  }
 }
