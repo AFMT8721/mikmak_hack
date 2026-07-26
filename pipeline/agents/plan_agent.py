@@ -201,6 +201,10 @@ def plan_inhibitor_round(
 
 def write_round_inputs(round_id: str, values: dict) -> Path:
     INPUTS_DIR.mkdir(exist_ok=True)
+    # `run_name` is how watch_execution matches a physical run back to its round,
+    # so it has to be unique per round — the per-assay-type base name alone would
+    # make a second round of the same type claim the first one's execution.
+    values = {**values, "run_name": f"{values['run_name']}_{round_id}"}
     out_path = INPUTS_DIR / f"{round_id}.json"
     out_path.write_text(json.dumps({"_label": round_id, **values}, indent=2) + "\n")
     return out_path

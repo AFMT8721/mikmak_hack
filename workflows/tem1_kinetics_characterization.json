@@ -84,21 +84,21 @@
       "type": "string",
       "is_array": false,
       "description": "Name for this run's saved output folder",
-      "defaultValue": "tem1_kinetics_run"
+      "defaultValue": "tem1_kinetics_run_mikmak-mae"
     },
     {
       "name": "pt_e1s1_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for enzyme level 1 x substrate level 1",
-      "defaultValue": ""
+      "defaultValue": "A1"
     },
     {
       "name": "pt_e1s1_enzyme_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Enzyme volume (uL) at grid point (1,1)",
-      "defaultValue": 0.0
+      "defaultValue": 0.2
     },
     {
       "name": "pt_e1s1_enzyme_tip_index",
@@ -112,490 +112,490 @@
       "type": "float",
       "is_array": false,
       "description": "Nitrocefin substrate volume (uL) at grid point (1,1)",
-      "defaultValue": 0.0
+      "defaultValue": 1.0
     },
     {
       "name": "pt_e1s1_substrate_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the substrate leg at (1,1)",
-      "defaultValue": 1
+      "defaultValue": 2
     },
     {
       "name": "pt_e1s1_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) at grid point (1,1)",
-      "defaultValue": 0.0
+      "defaultValue": 18.8
     },
     {
       "name": "pt_e1s1_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the buffer leg at (1,1)",
-      "defaultValue": 1
+      "defaultValue": 3
     },
     {
       "name": "pt_e1s2_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for enzyme level 1 x substrate level 2",
-      "defaultValue": ""
+      "defaultValue": "A2"
     },
     {
       "name": "pt_e1s2_enzyme_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Enzyme volume (uL) at grid point (1,2)",
-      "defaultValue": 0.0
+      "defaultValue": 0.2
     },
     {
       "name": "pt_e1s2_enzyme_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the enzyme leg at (1,2)",
-      "defaultValue": 1
+      "defaultValue": 4
     },
     {
       "name": "pt_e1s2_substrate_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Nitrocefin substrate volume (uL) at grid point (1,2)",
-      "defaultValue": 0.0
+      "defaultValue": 3.0
     },
     {
       "name": "pt_e1s2_substrate_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the substrate leg at (1,2)",
-      "defaultValue": 1
+      "defaultValue": 5
     },
     {
       "name": "pt_e1s2_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) at grid point (1,2)",
-      "defaultValue": 0.0
+      "defaultValue": 16.8
     },
     {
       "name": "pt_e1s2_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the buffer leg at (1,2)",
-      "defaultValue": 1
+      "defaultValue": 6
     },
     {
       "name": "pt_e1s3_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for enzyme level 1 x substrate level 3",
-      "defaultValue": ""
+      "defaultValue": "A3"
     },
     {
       "name": "pt_e1s3_enzyme_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Enzyme volume (uL) at grid point (1,3)",
-      "defaultValue": 0.0
+      "defaultValue": 0.2
     },
     {
       "name": "pt_e1s3_enzyme_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the enzyme leg at (1,3)",
-      "defaultValue": 1
+      "defaultValue": 7
     },
     {
       "name": "pt_e1s3_substrate_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Nitrocefin substrate volume (uL) at grid point (1,3)",
-      "defaultValue": 0.0
+      "defaultValue": 9.0
     },
     {
       "name": "pt_e1s3_substrate_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the substrate leg at (1,3)",
-      "defaultValue": 1
+      "defaultValue": 8
     },
     {
       "name": "pt_e1s3_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) at grid point (1,3)",
-      "defaultValue": 0.0
+      "defaultValue": 10.8
     },
     {
       "name": "pt_e1s3_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the buffer leg at (1,3)",
-      "defaultValue": 1
+      "defaultValue": 9
     },
     {
       "name": "pt_e2s1_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for enzyme level 2 x substrate level 1",
-      "defaultValue": ""
+      "defaultValue": "A4"
     },
     {
       "name": "pt_e2s1_enzyme_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Enzyme volume (uL) at grid point (2,1)",
-      "defaultValue": 0.0
+      "defaultValue": 1.0
     },
     {
       "name": "pt_e2s1_enzyme_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the enzyme leg at (2,1)",
-      "defaultValue": 1
+      "defaultValue": 10
     },
     {
       "name": "pt_e2s1_substrate_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Nitrocefin substrate volume (uL) at grid point (2,1)",
-      "defaultValue": 0.0
+      "defaultValue": 1.0
     },
     {
       "name": "pt_e2s1_substrate_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the substrate leg at (2,1)",
-      "defaultValue": 1
+      "defaultValue": 11
     },
     {
       "name": "pt_e2s1_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) at grid point (2,1)",
-      "defaultValue": 0.0
+      "defaultValue": 18.0
     },
     {
       "name": "pt_e2s1_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the buffer leg at (2,1)",
-      "defaultValue": 1
+      "defaultValue": 12
     },
     {
       "name": "pt_e2s2_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for enzyme level 2 x substrate level 2",
-      "defaultValue": ""
+      "defaultValue": "A5"
     },
     {
       "name": "pt_e2s2_enzyme_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Enzyme volume (uL) at grid point (2,2)",
-      "defaultValue": 0.0
+      "defaultValue": 1.0
     },
     {
       "name": "pt_e2s2_enzyme_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the enzyme leg at (2,2)",
-      "defaultValue": 1
+      "defaultValue": 13
     },
     {
       "name": "pt_e2s2_substrate_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Nitrocefin substrate volume (uL) at grid point (2,2)",
-      "defaultValue": 0.0
+      "defaultValue": 3.0
     },
     {
       "name": "pt_e2s2_substrate_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the substrate leg at (2,2)",
-      "defaultValue": 1
+      "defaultValue": 14
     },
     {
       "name": "pt_e2s2_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) at grid point (2,2)",
-      "defaultValue": 0.0
+      "defaultValue": 16.0
     },
     {
       "name": "pt_e2s2_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the buffer leg at (2,2)",
-      "defaultValue": 1
+      "defaultValue": 15
     },
     {
       "name": "pt_e2s3_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for enzyme level 2 x substrate level 3",
-      "defaultValue": ""
+      "defaultValue": "A6"
     },
     {
       "name": "pt_e2s3_enzyme_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Enzyme volume (uL) at grid point (2,3)",
-      "defaultValue": 0.0
+      "defaultValue": 1.0
     },
     {
       "name": "pt_e2s3_enzyme_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the enzyme leg at (2,3)",
-      "defaultValue": 1
+      "defaultValue": 16
     },
     {
       "name": "pt_e2s3_substrate_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Nitrocefin substrate volume (uL) at grid point (2,3)",
-      "defaultValue": 0.0
+      "defaultValue": 9.0
     },
     {
       "name": "pt_e2s3_substrate_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the substrate leg at (2,3)",
-      "defaultValue": 1
+      "defaultValue": 17
     },
     {
       "name": "pt_e2s3_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) at grid point (2,3)",
-      "defaultValue": 0.0
+      "defaultValue": 10.0
     },
     {
       "name": "pt_e2s3_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the buffer leg at (2,3)",
-      "defaultValue": 1
+      "defaultValue": 18
     },
     {
       "name": "pt_e3s1_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for enzyme level 3 x substrate level 1",
-      "defaultValue": ""
+      "defaultValue": "A7"
     },
     {
       "name": "pt_e3s1_enzyme_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Enzyme volume (uL) at grid point (3,1)",
-      "defaultValue": 0.0
+      "defaultValue": 5.0
     },
     {
       "name": "pt_e3s1_enzyme_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the enzyme leg at (3,1)",
-      "defaultValue": 1
+      "defaultValue": 19
     },
     {
       "name": "pt_e3s1_substrate_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Nitrocefin substrate volume (uL) at grid point (3,1)",
-      "defaultValue": 0.0
+      "defaultValue": 1.0
     },
     {
       "name": "pt_e3s1_substrate_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the substrate leg at (3,1)",
-      "defaultValue": 1
+      "defaultValue": 20
     },
     {
       "name": "pt_e3s1_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) at grid point (3,1)",
-      "defaultValue": 0.0
+      "defaultValue": 14.0
     },
     {
       "name": "pt_e3s1_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the buffer leg at (3,1)",
-      "defaultValue": 1
+      "defaultValue": 21
     },
     {
       "name": "pt_e3s2_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for enzyme level 3 x substrate level 2",
-      "defaultValue": ""
+      "defaultValue": "A8"
     },
     {
       "name": "pt_e3s2_enzyme_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Enzyme volume (uL) at grid point (3,2)",
-      "defaultValue": 0.0
+      "defaultValue": 5.0
     },
     {
       "name": "pt_e3s2_enzyme_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the enzyme leg at (3,2)",
-      "defaultValue": 1
+      "defaultValue": 22
     },
     {
       "name": "pt_e3s2_substrate_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Nitrocefin substrate volume (uL) at grid point (3,2)",
-      "defaultValue": 0.0
+      "defaultValue": 3.0
     },
     {
       "name": "pt_e3s2_substrate_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the substrate leg at (3,2)",
-      "defaultValue": 1
+      "defaultValue": 23
     },
     {
       "name": "pt_e3s2_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) at grid point (3,2)",
-      "defaultValue": 0.0
+      "defaultValue": 12.0
     },
     {
       "name": "pt_e3s2_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the buffer leg at (3,2)",
-      "defaultValue": 1
+      "defaultValue": 24
     },
     {
       "name": "pt_e3s3_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for enzyme level 3 x substrate level 3",
-      "defaultValue": ""
+      "defaultValue": "A9"
     },
     {
       "name": "pt_e3s3_enzyme_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Enzyme volume (uL) at grid point (3,3)",
-      "defaultValue": 0.0
+      "defaultValue": 5.0
     },
     {
       "name": "pt_e3s3_enzyme_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the enzyme leg at (3,3)",
-      "defaultValue": 1
+      "defaultValue": 25
     },
     {
       "name": "pt_e3s3_substrate_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Nitrocefin substrate volume (uL) at grid point (3,3)",
-      "defaultValue": 0.0
+      "defaultValue": 9.0
     },
     {
       "name": "pt_e3s3_substrate_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the substrate leg at (3,3)",
-      "defaultValue": 1
+      "defaultValue": 26
     },
     {
       "name": "pt_e3s3_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) at grid point (3,3)",
-      "defaultValue": 0.0
+      "defaultValue": 6.0
     },
     {
       "name": "pt_e3s3_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the buffer leg at (3,3)",
-      "defaultValue": 1
+      "defaultValue": 27
     },
     {
       "name": "blank_e_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for the blank_e control",
-      "defaultValue": ""
+      "defaultValue": "A10"
     },
     {
       "name": "blank_e_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "enz volume (uL) for the blank_e control",
-      "defaultValue": 0.0
+      "defaultValue": 1.0
     },
     {
       "name": "blank_e_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the blank_e enz leg",
-      "defaultValue": 1
+      "defaultValue": 28
     },
     {
       "name": "blank_e_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) for the blank_e control",
-      "defaultValue": 0.0
+      "defaultValue": 19.0
     },
     {
       "name": "blank_e_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the blank_e buffer leg",
-      "defaultValue": 1
+      "defaultValue": 29
     },
     {
       "name": "blank_s_well",
       "type": "string",
       "is_array": false,
       "description": "Destination well for the blank_s control",
-      "defaultValue": ""
+      "defaultValue": "A11"
     },
     {
       "name": "blank_s_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "sub volume (uL) for the blank_s control",
-      "defaultValue": 0.0
+      "defaultValue": 3.0
     },
     {
       "name": "blank_s_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the blank_s sub leg",
-      "defaultValue": 1
+      "defaultValue": 30
     },
     {
       "name": "blank_s_buffer_vol_ul",
       "type": "float",
       "is_array": false,
       "description": "Buffer top-up volume (uL) for the blank_s control",
-      "defaultValue": 0.0
+      "defaultValue": 17.0
     },
     {
       "name": "blank_s_buffer_tip_index",
       "type": "int",
       "is_array": false,
       "description": "Tip index for the blank_s buffer leg",
-      "defaultValue": 1
+      "defaultValue": 31
     }
   ],
   "nodes": [

@@ -223,3 +223,9 @@ __marimo__/
 *.db
 .beads-credential-key
 .beads/proxieddb/
+
+# ADK web session state (per-agent, machine-local)
+pipeline/agents/*/.adk/
+
+# zeon's local content-addressed object cache — rebuildable from the cloud
+.zeon/objects/

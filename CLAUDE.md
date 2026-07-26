@@ -134,6 +134,38 @@ ADK + beads + marimo), across three round types:
   well with compound + nitrocefin per position and reads kinetically; the initial
   slope of A490 vs time is TEM-1's velocity, and inhibition drops it.
 
+**The loop is driven conversationally.** `pipeline/agents/tem1_pipeline/` is an
+ADK coordinator (`root_agent`) over five sub-agents — `planner`, `syncer`,
+`simulator`, `executor`, `analyst` — one per stage. Chat with it:
+
+```bash
+cp pipeline/agents/tem1_pipeline/.env.example pipeline/agents/tem1_pipeline/.env  # add GOOGLE_API_KEY
+adk web pipeline/agents        # or: adk run pipeline/agents/tem1_pipeline
+```
+
+The agents hold no scientific logic of their own — every tool wraps a plain
+function in `plan_agent.py` / `simulate.py` / `watch_execution.py` /
+`analyze_agent.py` / `zeon_sync.py`, and every stage transition still goes
+through `beads_writer`, so `bd show <round>` remains the record of what happened.
+Three constraints are wired into the agents' instructions on purpose:
+
+- **The chat cannot start a run.** The `zeon` CLI has no run command. `executor`
+  approves the round, hands over the workflow + exact `run_name` + deck, then
+  polls `data/logs/` until the human-triggered run lands.
+- **Pushing is asked for every time.** `syncer` bakes a round's preset into the
+  target workflow's `inputs[].defaultValue` (that — not `inputs/<round>.json` —
+  is what pre-fills the app's run-setup canvas), then requires an explicit
+  go-ahead before `zeon commit`/`push`.
+- **`zeon_sync.SYNC_PATHS` scopes every commit** to `project.json`, `workflows/`,
+  `skills/`, `worlds/`, `objects/`, `canvas/`, `inputs/`, `data/`. A bare
+  `zeon commit` snapshots the whole tree, which here would push the beads DB and
+  `graphify-out/` into the cloud lab project. **`zeon sync` and `zeon pull` both
+  finish with an unscoped whole-tree commit** — so don't reach for them directly;
+  `zeon_sync.reconcile_with_cloud()` does the same merge, then resets HEAD back to
+  the cloud tip and rebuilds the commit from `SYNC_PATHS` only. A push that fails
+  with "the cloud has changed since your last sync" (a run finishing in the app
+  writes its logs back to the cloud ref) retries through it automatically.
+
 `pipeline/beads_writer.py` is the **single writer** to the beads (`bd`) DAG — every
 stage transition of every round goes through it, nothing else calls `bd` directly.
 `pipeline/agents/plan_agent.py` and `analyze_agent.py` are Google ADK agents (their
