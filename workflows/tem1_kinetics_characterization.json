@@ -820,23 +820,6 @@
       }
     },
     {
-      "node_id": "pt_e1s1_mix",
-      "type": "skill",
-      "label": "Mix in place (pt_e1s1)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "pt_e1s1_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
-        }
-      }
-    },
-    {
       "node_id": "pt_e1s2_enz_attach",
       "type": "skill",
       "label": "Attach tip (pt_e1s2_enz)",
@@ -1037,23 +1020,6 @@
       "parameters": {
         "pipette": {
           "$input": "pipette"
-        }
-      }
-    },
-    {
-      "node_id": "pt_e1s2_mix",
-      "type": "skill",
-      "label": "Mix in place (pt_e1s2)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "pt_e1s2_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
         }
       }
     },
@@ -1262,23 +1228,6 @@
       }
     },
     {
-      "node_id": "pt_e1s3_mix",
-      "type": "skill",
-      "label": "Mix in place (pt_e1s3)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "pt_e1s3_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
-        }
-      }
-    },
-    {
       "node_id": "pt_e2s1_enz_attach",
       "type": "skill",
       "label": "Attach tip (pt_e2s1_enz)",
@@ -1479,23 +1428,6 @@
       "parameters": {
         "pipette": {
           "$input": "pipette"
-        }
-      }
-    },
-    {
-      "node_id": "pt_e2s1_mix",
-      "type": "skill",
-      "label": "Mix in place (pt_e2s1)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "pt_e2s1_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
         }
       }
     },
@@ -1704,23 +1636,6 @@
       }
     },
     {
-      "node_id": "pt_e2s2_mix",
-      "type": "skill",
-      "label": "Mix in place (pt_e2s2)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "pt_e2s2_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
-        }
-      }
-    },
-    {
       "node_id": "pt_e2s3_enz_attach",
       "type": "skill",
       "label": "Attach tip (pt_e2s3_enz)",
@@ -1921,23 +1836,6 @@
       "parameters": {
         "pipette": {
           "$input": "pipette"
-        }
-      }
-    },
-    {
-      "node_id": "pt_e2s3_mix",
-      "type": "skill",
-      "label": "Mix in place (pt_e2s3)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "pt_e2s3_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
         }
       }
     },
@@ -2146,23 +2044,6 @@
       }
     },
     {
-      "node_id": "pt_e3s1_mix",
-      "type": "skill",
-      "label": "Mix in place (pt_e3s1)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "pt_e3s1_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
-        }
-      }
-    },
-    {
       "node_id": "pt_e3s2_enz_attach",
       "type": "skill",
       "label": "Attach tip (pt_e3s2_enz)",
@@ -2363,23 +2244,6 @@
       "parameters": {
         "pipette": {
           "$input": "pipette"
-        }
-      }
-    },
-    {
-      "node_id": "pt_e3s2_mix",
-      "type": "skill",
-      "label": "Mix in place (pt_e3s2)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "pt_e3s2_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
         }
       }
     },
@@ -2588,23 +2452,6 @@
       }
     },
     {
-      "node_id": "pt_e3s3_mix",
-      "type": "skill",
-      "label": "Mix in place (pt_e3s3)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "pt_e3s3_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
-        }
-      }
-    },
-    {
       "node_id": "blank_e_enz_attach",
       "type": "skill",
       "label": "Attach tip (blank_e_enz)",
@@ -2741,23 +2588,6 @@
       }
     },
     {
-      "node_id": "blank_e_mix",
-      "type": "skill",
-      "label": "Mix in place (blank_e)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "blank_e_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
-        }
-      }
-    },
-    {
       "node_id": "blank_s_sub_attach",
       "type": "skill",
       "label": "Attach tip (blank_s_sub)",
@@ -2890,23 +2720,6 @@
       "parameters": {
         "pipette": {
           "$input": "pipette"
-        }
-      }
-    },
-    {
-      "node_id": "blank_s_mix",
-      "type": "skill",
-      "label": "Mix in place (blank_s)",
-      "skill_id": "epipette_mix",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        },
-        "mix_volume": {
-          "$input": "blank_s_buffer_vol_ul"
-        },
-        "contents_volume": {
-          "$input": "total_well_volume_ul"
         }
       }
     },
@@ -3093,9 +2906,9 @@
       }
     },
     {
-      "edge_id": "e_pt_e1s1_buf_eject_pt_e1s1_mix",
+      "edge_id": "e_pt_e1s1_buf_eject_pt_e1s2_enz_attach",
       "from_node": "pt_e1s1_buf_eject",
-      "to_node": "pt_e1s1_mix",
+      "to_node": "pt_e1s2_enz_attach",
       "condition": {
         "type": "on_success"
       }
@@ -3173,14 +2986,6 @@
       }
     },
     {
-      "edge_id": "e_pt_e1s1_mix_pt_e1s2_enz_attach",
-      "from_node": "pt_e1s1_mix",
-      "to_node": "pt_e1s2_enz_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
       "edge_id": "e_pt_e1s2_enz_eject_pt_e1s2_sub_attach",
       "from_node": "pt_e1s2_enz_eject",
       "to_node": "pt_e1s2_sub_attach",
@@ -3197,9 +3002,9 @@
       }
     },
     {
-      "edge_id": "e_pt_e1s2_buf_eject_pt_e1s2_mix",
+      "edge_id": "e_pt_e1s2_buf_eject_pt_e1s3_enz_attach",
       "from_node": "pt_e1s2_buf_eject",
-      "to_node": "pt_e1s2_mix",
+      "to_node": "pt_e1s3_enz_attach",
       "condition": {
         "type": "on_success"
       }
@@ -3277,14 +3082,6 @@
       }
     },
     {
-      "edge_id": "e_pt_e1s2_mix_pt_e1s3_enz_attach",
-      "from_node": "pt_e1s2_mix",
-      "to_node": "pt_e1s3_enz_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
       "edge_id": "e_pt_e1s3_enz_eject_pt_e1s3_sub_attach",
       "from_node": "pt_e1s3_enz_eject",
       "to_node": "pt_e1s3_sub_attach",
@@ -3301,9 +3098,9 @@
       }
     },
     {
-      "edge_id": "e_pt_e1s3_buf_eject_pt_e1s3_mix",
+      "edge_id": "e_pt_e1s3_buf_eject_pt_e2s1_enz_attach",
       "from_node": "pt_e1s3_buf_eject",
-      "to_node": "pt_e1s3_mix",
+      "to_node": "pt_e2s1_enz_attach",
       "condition": {
         "type": "on_success"
       }
@@ -3381,14 +3178,6 @@
       }
     },
     {
-      "edge_id": "e_pt_e1s3_mix_pt_e2s1_enz_attach",
-      "from_node": "pt_e1s3_mix",
-      "to_node": "pt_e2s1_enz_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
       "edge_id": "e_pt_e2s1_enz_eject_pt_e2s1_sub_attach",
       "from_node": "pt_e2s1_enz_eject",
       "to_node": "pt_e2s1_sub_attach",
@@ -3405,9 +3194,9 @@
       }
     },
     {
-      "edge_id": "e_pt_e2s1_buf_eject_pt_e2s1_mix",
+      "edge_id": "e_pt_e2s1_buf_eject_pt_e2s2_enz_attach",
       "from_node": "pt_e2s1_buf_eject",
-      "to_node": "pt_e2s1_mix",
+      "to_node": "pt_e2s2_enz_attach",
       "condition": {
         "type": "on_success"
       }
@@ -3485,14 +3274,6 @@
       }
     },
     {
-      "edge_id": "e_pt_e2s1_mix_pt_e2s2_enz_attach",
-      "from_node": "pt_e2s1_mix",
-      "to_node": "pt_e2s2_enz_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
       "edge_id": "e_pt_e2s2_enz_eject_pt_e2s2_sub_attach",
       "from_node": "pt_e2s2_enz_eject",
       "to_node": "pt_e2s2_sub_attach",
@@ -3509,9 +3290,9 @@
       }
     },
     {
-      "edge_id": "e_pt_e2s2_buf_eject_pt_e2s2_mix",
+      "edge_id": "e_pt_e2s2_buf_eject_pt_e2s3_enz_attach",
       "from_node": "pt_e2s2_buf_eject",
-      "to_node": "pt_e2s2_mix",
+      "to_node": "pt_e2s3_enz_attach",
       "condition": {
         "type": "on_success"
       }
@@ -3589,14 +3370,6 @@
       }
     },
     {
-      "edge_id": "e_pt_e2s2_mix_pt_e2s3_enz_attach",
-      "from_node": "pt_e2s2_mix",
-      "to_node": "pt_e2s3_enz_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
       "edge_id": "e_pt_e2s3_enz_eject_pt_e2s3_sub_attach",
       "from_node": "pt_e2s3_enz_eject",
       "to_node": "pt_e2s3_sub_attach",
@@ -3613,9 +3386,9 @@
       }
     },
     {
-      "edge_id": "e_pt_e2s3_buf_eject_pt_e2s3_mix",
+      "edge_id": "e_pt_e2s3_buf_eject_pt_e3s1_enz_attach",
       "from_node": "pt_e2s3_buf_eject",
-      "to_node": "pt_e2s3_mix",
+      "to_node": "pt_e3s1_enz_attach",
       "condition": {
         "type": "on_success"
       }
@@ -3693,14 +3466,6 @@
       }
     },
     {
-      "edge_id": "e_pt_e2s3_mix_pt_e3s1_enz_attach",
-      "from_node": "pt_e2s3_mix",
-      "to_node": "pt_e3s1_enz_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
       "edge_id": "e_pt_e3s1_enz_eject_pt_e3s1_sub_attach",
       "from_node": "pt_e3s1_enz_eject",
       "to_node": "pt_e3s1_sub_attach",
@@ -3717,9 +3482,9 @@
       }
     },
     {
-      "edge_id": "e_pt_e3s1_buf_eject_pt_e3s1_mix",
+      "edge_id": "e_pt_e3s1_buf_eject_pt_e3s2_enz_attach",
       "from_node": "pt_e3s1_buf_eject",
-      "to_node": "pt_e3s1_mix",
+      "to_node": "pt_e3s2_enz_attach",
       "condition": {
         "type": "on_success"
       }
@@ -3797,14 +3562,6 @@
       }
     },
     {
-      "edge_id": "e_pt_e3s1_mix_pt_e3s2_enz_attach",
-      "from_node": "pt_e3s1_mix",
-      "to_node": "pt_e3s2_enz_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
       "edge_id": "e_pt_e3s2_enz_eject_pt_e3s2_sub_attach",
       "from_node": "pt_e3s2_enz_eject",
       "to_node": "pt_e3s2_sub_attach",
@@ -3821,9 +3578,9 @@
       }
     },
     {
-      "edge_id": "e_pt_e3s2_buf_eject_pt_e3s2_mix",
+      "edge_id": "e_pt_e3s2_buf_eject_pt_e3s3_enz_attach",
       "from_node": "pt_e3s2_buf_eject",
-      "to_node": "pt_e3s2_mix",
+      "to_node": "pt_e3s3_enz_attach",
       "condition": {
         "type": "on_success"
       }
@@ -3901,14 +3658,6 @@
       }
     },
     {
-      "edge_id": "e_pt_e3s2_mix_pt_e3s3_enz_attach",
-      "from_node": "pt_e3s2_mix",
-      "to_node": "pt_e3s3_enz_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
       "edge_id": "e_pt_e3s3_enz_eject_pt_e3s3_sub_attach",
       "from_node": "pt_e3s3_enz_eject",
       "to_node": "pt_e3s3_sub_attach",
@@ -3925,9 +3674,9 @@
       }
     },
     {
-      "edge_id": "e_pt_e3s3_buf_eject_pt_e3s3_mix",
+      "edge_id": "e_pt_e3s3_buf_eject_blank_e_enz_attach",
       "from_node": "pt_e3s3_buf_eject",
-      "to_node": "pt_e3s3_mix",
+      "to_node": "blank_e_enz_attach",
       "condition": {
         "type": "on_success"
       }
@@ -3981,14 +3730,6 @@
       }
     },
     {
-      "edge_id": "e_pt_e3s3_mix_blank_e_enz_attach",
-      "from_node": "pt_e3s3_mix",
-      "to_node": "blank_e_enz_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
       "edge_id": "e_blank_e_enz_eject_blank_e_buf_attach",
       "from_node": "blank_e_enz_eject",
       "to_node": "blank_e_buf_attach",
@@ -3997,9 +3738,9 @@
       }
     },
     {
-      "edge_id": "e_blank_e_buf_eject_blank_e_mix",
+      "edge_id": "e_blank_e_buf_eject_blank_s_sub_attach",
       "from_node": "blank_e_buf_eject",
-      "to_node": "blank_e_mix",
+      "to_node": "blank_s_sub_attach",
       "condition": {
         "type": "on_success"
       }
@@ -4053,14 +3794,6 @@
       }
     },
     {
-      "edge_id": "e_blank_e_mix_blank_s_sub_attach",
-      "from_node": "blank_e_mix",
-      "to_node": "blank_s_sub_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
       "edge_id": "e_blank_s_sub_eject_blank_s_buf_attach",
       "from_node": "blank_s_sub_eject",
       "to_node": "blank_s_buf_attach",
@@ -4069,16 +3802,8 @@
       }
     },
     {
-      "edge_id": "e_blank_s_buf_eject_blank_s_mix",
+      "edge_id": "e_blank_s_buf_eject_place_pipette",
       "from_node": "blank_s_buf_eject",
-      "to_node": "blank_s_mix",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_blank_s_mix_place_pipette",
-      "from_node": "blank_s_mix",
       "to_node": "place_pipette",
       "condition": {
         "type": "on_success"

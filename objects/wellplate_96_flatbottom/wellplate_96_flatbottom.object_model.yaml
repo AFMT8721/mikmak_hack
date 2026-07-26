@@ -630,10 +630,11 @@ anchors:
       wxyz: [4.32978e-17, 0.707107, -0.707107, -4.32978e-17]
   depth_bottom:
     parent_link: body
-    description: Depth reference — 1.57 cm below the well top. distance(depth_top,
-      depth_bottom) = 1.57 cm = how far the tip descends below the well top when aspirating/dispensing.
+    description: Depth reference — 1.63 cm below the well top. distance(depth_top,
+      depth_bottom) = 1.63 cm = how far the tip descends below the well top when aspirating/dispensing.
+      Lowered 0.6 mm from the original 1.57 cm.
     link_T_anchor:
-      xyz: [-8.0e-05, -1.0e-06, -0.001561]
+      xyz: [-8.0e-05, -1.0e-06, -0.002161]
       wxyz: [4.32978e-17, 0.707107, -0.707107, -4.32978e-17]
   grasp_longside_platereader:
     parent_link: body
