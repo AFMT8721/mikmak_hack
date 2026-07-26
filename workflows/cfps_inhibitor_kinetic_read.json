@@ -127,16 +127,16 @@
       }
     },
     {
-      "edge_id": "e_grab_plate_reader_open_pre",
-      "from_node": "grab_plate",
-      "to_node": "reader_open_pre",
+      "edge_id": "e_reader_open_pre_grab_plate",
+      "from_node": "reader_open_pre",
+      "to_node": "grab_plate",
       "condition": {
         "type": "on_success"
       }
     },
     {
-      "edge_id": "e_reader_open_pre_reader_load",
-      "from_node": "reader_open_pre",
+      "edge_id": "e_grab_plate_reader_load",
+      "from_node": "grab_plate",
       "to_node": "reader_load",
       "condition": {
         "type": "on_success"
@@ -167,9 +167,9 @@
       }
     },
     {
-      "edge_id": "e_save_run_start_grab_plate",
+      "edge_id": "e_save_run_start_reader_open_pre",
       "from_node": "save_run_start",
-      "to_node": "grab_plate",
+      "to_node": "reader_open_pre",
       "condition": {
         "type": "default"
       }

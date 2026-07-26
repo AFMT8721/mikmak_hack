@@ -69,10 +69,14 @@ depth_bottom:
 
 | Object | Top Z | `depth_top` → `depth_bottom` | Depth |
 |--------|-------|------------------------------|-------|
-| `wellplate_96_flatbottom` | `0.014139` (`A1`) | `0.014139` → `0.004139` | **1 cm** |
-| `coldblock_wellplate` | `0.035788` (`hole_1`) | `0.035788` → `0.015788` | **2 cm** |
-| `wellplate_pcr` (parts plate) | `0.01549` (all 96 wells) | `0.01549` → `0.00649` | **9 mm** |
+| `wellplate_96_flatbottom` | `0.014139` (`A1`) | `0.014139` → `-0.002561` | **1.67 cm** |
+| `coldblock_wellplate` | `0.035788` (`hole_1`) | `0.035788` → `0.006688` | **2.91 cm** |
+| `wellplate_pcr` (parts + reaction plates) | `0.01549` (all 96 wells) | `0.01549` → `0.00549` | **1.0 cm** |
 | everything else | — | (none) | falls back to the skill param (`aspirate_depth=0.002`, `dispense_depth=0.0125`) |
+
+All three went 1 mm deeper on 2026-07-26 (tips were bottoming out short). To repeat that,
+subtract from `depth_bottom`'s **z only** — never touch `depth_top` or either XY, since
+the shared XY is what makes the Z gap equal the depth.
 
 ## Notes / gotchas
 

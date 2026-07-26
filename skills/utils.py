@@ -106,6 +106,67 @@ def snap_plate_into_gripper(object_id, arm: str = "right_arm", grasp_anchor: str
     attach_object_to_arm(object_id, arm=arm)
 
 
+# ---- Ramped Cartesian approach ---------------------------------------------
+# Touching down on an anchor has to be slow; the travel getting there does not. The
+# skills used to run one slow move over the whole distance, so a 15 cm descent crawled
+# at the speed only the last few millimetres needed. `move_arm_ramped` splits it: fast
+# until `SLOW_ZONE_M` short of the target, then the original slow speed for the tail.
+SLOW_ZONE_M = 0.015
+
+
+def move_arm_ramped(
+    arm,
+    position,
+    orientation,
+    slow_speed,
+    fast_speed: float = 250,
+    slow_zone_m: float = SLOW_ZONE_M,
+    wait: bool = True,
+    start=None,
+):
+    """Travel fast, touch down slow — same straight line, same endpoint.
+
+    Only the final ``slow_zone_m`` of the move runs at ``slow_speed``; everything before
+    it runs at ``fast_speed``. The intermediate waypoint lies on the straight line the
+    single move would have taken, so the geometry is unchanged — just the speed profile.
+
+    A move already no longer than ``slow_zone_m`` is a small anchor move (a dip, a press,
+    a settle) and is emitted as one slow move exactly as before.
+
+    Args:
+        arm: "left_arm" or "right_arm".
+        position: ``[x, y, z]`` world target, metres.
+        orientation: ``[roll, pitch, yaw]`` target orientation, radians. Note the wrist
+            finishes reorienting by the intermediate point, not at the target — that
+            matters only when start and end orientations differ.
+        slow_speed: Speed for the final ``slow_zone_m`` (the old speed of the whole move).
+        fast_speed: Speed for the bulk leg.
+        slow_zone_m: Length of the slow tail, metres.
+        wait: Passed to the final move; the bulk leg always waits.
+        start: Current TCP xyz, when the caller already knows it (it just commanded a
+            move there). Saves a ``get_arm_pose`` read; resolved live when omitted.
+    """
+    from execution.execution_functions import get_arm_pose, move_arm
+
+    target = [float(v) for v in position]
+    if start is None:
+        start = get_arm_pose(arm=arm)[:3]
+    origin = [float(v) for v in start]
+
+    vec = [target[i] - origin[i] for i in range(3)]
+    dist = (vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2) ** 0.5
+
+    # Small anchor move (or a no-op): one slow move, unchanged behaviour.
+    if dist <= slow_zone_m:
+        move_arm(arm=arm, position=target, orientation=orientation, speed=slow_speed, wait=wait)
+        return
+
+    frac = (dist - slow_zone_m) / dist
+    mid = [origin[i] + vec[i] * frac for i in range(3)]
+    move_arm(arm=arm, position=mid, orientation=orientation, speed=fast_speed, wait=True)
+    move_arm(arm=arm, position=target, orientation=orientation, speed=slow_speed, wait=wait)
+
+
 # ---- Pipettes --------------------------------------------------------------
 # Two pipettes with non-overlapping ranges. A transfer under 10 uL uses the
 # 10 uL pipette, anything else the 120 uL one.

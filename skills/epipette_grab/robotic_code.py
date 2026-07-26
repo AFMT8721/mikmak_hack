@@ -2,7 +2,7 @@ import time
 
 from execution.skill_editing import shared_state
 from protocol_schema import SkillObject
-from utils import LEFT_ARM_STOW_JOINTS, object_display_name
+from utils import LEFT_ARM_STOW_JOINTS, SLOW_ZONE_M, move_arm_ramped, object_display_name
 
 from .modules import (
     attach_object_to_arm,
@@ -26,6 +26,9 @@ def epipette_grab(
     grasp_anchor: str = "grab",
     prepose: str = "grab_prepose",
     postpose: str = "grab_postpose",
+    prepose_speed: float = 200,
+    fast_speed: float = 100,
+    slow_zone_m: float = SLOW_ZONE_M,
 ):
     """Pick up a pipette with the left arm at a named grasp anchor.
 
@@ -44,6 +47,14 @@ def epipette_grab(
         postpose: Optional anchor name to move to immediately after grabbing (an
             in-place reorient before retracting). Pass an empty string to skip it;
             if the anchor is not on the object model it is skipped with a warning.
+        prepose_speed: Speed of the inbound move to ``prepose``. Free-space travel with
+            an empty gripper that ends at a standoff, so it is fast and unramped. The
+            *outbound* retreat back through the prepose is deliberately slower — it
+            carries the pipette.
+        fast_speed: Speed for the bulk of the prepose -> grasp approach. Only the final
+            ``slow_zone_m`` runs at the slow grasp speed. The postpose reorient is an
+            in-place move and is left alone.
+        slow_zone_m: Length of the slow tail on that approach, in meters.
     """
     print_log(runlog=True, runlog_type="step_start")
     print_log(f"Starting epipette_grab (anchor={grasp_anchor}, prepose={prepose}, postpose={postpose})")
@@ -87,7 +98,9 @@ def epipette_grab(
     set_gripper(arm="left_arm", width_m=0.05)
     time.sleep(0.1)
 
-    # Optional prepose: move to an approach anchor before the grasp pose.
+    # Optional prepose: move to an approach anchor before the grasp pose. Free-space
+    # travel from the stow pose with an empty gripper, ending at a standoff rather than
+    # on the pipette — no touch-down precision needed, so it runs fast and unramped.
     if prepose:
         try:
             pre = load_object_anchor(object_id, prepose)
@@ -96,19 +109,24 @@ def epipette_grab(
                 arm="left_arm",
                 position=pre["xyz"],
                 orientation=pre["rpy"],
-                speed=70,
+                speed=prepose_speed,
                 wait=True,
             )
         except (KeyError, ValueError) as e:
             print_log(f"Prepose anchor '{prepose}' unavailable, skipping: {e}")
 
-    # Move to the grasp pose and grab.
-    move_arm(
+    # Move to the grasp pose and grab: fast for the bulk of the approach, the slow grasp
+    # speed only for the last `slow_zone_m`. `start` is the prepose when it resolved;
+    # otherwise the helper reads the arm (we came straight from the stow pose).
+    move_arm_ramped(
         arm="left_arm",
         position=pick_xyz,
         orientation=pick_ori,
-        speed=50,
+        slow_speed=50,
+        fast_speed=fast_speed,
+        slow_zone_m=slow_zone_m,
         wait=True,
+        start=saved_prepose["xyz"] if saved_prepose else None,
     )
     time.sleep(0.5)
     set_gripper(arm="left_arm", width_m=0.035)

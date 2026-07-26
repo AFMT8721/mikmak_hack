@@ -2,9 +2,13 @@
 
 Generic (no ``cfps_`` prefix) — composes the wellplate + platesealer atomics into
 one grab -> seal -> drop closure so any workflow can seal a plate in a single node.
-Sequence: grab the plate short-side, open the sealer door, load the plate, peel and
+Sequence: open the sealer door, grab the plate short-side, load the plate, peel and
 place a seal, close the door, press the seal button, unload the sealed plate, and
 drop it back onto its home anchor.
+
+The door is opened *before* the plate is picked up, matching the shaker and reader
+flows: every plate and lid move on this bench is right-arm, so a machine can never be
+opened while that arm is holding a plate.
 
 Progress is emitted to the run log at every stage via ``print_log(..., runlog=True)``.
 """
@@ -50,11 +54,14 @@ def seal_plate(
     """
     print_log(runlog=True, runlog_type="step_start")
 
-    _rl("seal_plate: grab plate (short-side)")
-    wellplate_grab(object=plate, grasp_anchor=grasp_anchor)
-
+    # Open the door first, with the right arm still empty — the arm that carries the
+    # plate is the same one that works the machines, so nothing may be in hand when a
+    # machine opens.
     _rl("seal_plate: open sealer door")
     platesealer_platemax_door()
+
+    _rl("seal_plate: grab plate (short-side)")
+    wellplate_grab(object=plate, grasp_anchor=grasp_anchor)
 
     _rl("seal_plate: load plate into sealer")
     platesealer_platemax_load(object=plate, platesealer=platesealer)

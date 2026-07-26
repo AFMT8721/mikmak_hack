@@ -1,10 +1,17 @@
 // Canvas for the `cfps_inhibitor_dose` workflow (Part 3a of the TEM-1 screen).
 //
-// Doses up to 8 already-expressed TEM1 wells (built by cfps_mastermix / Part 1,
-// confirmed by cfps_sfgfp_confirmation / Part 2) with a compound volume from a
-// pre-arrayed compound library plate. No nitrocefin and no reader here — after
-// this run, let the compound incubate with the enzyme off-robot, add nitrocefin
-// by hand, then run cfps_inhibitor_kinetic_read (Part 3b) to load the reader.
+// Doses up to 4 concentration groups of an already-expressed TEM1 plate (built by
+// cfps_mastermix / Part 1, confirmed by cfps_sfgfp_confirmation / Part 2) from a
+// pre-arrayed compound library plate holding one working-stock well per
+// concentration. Per the project's dose-response plate map (one compound per run,
+// 4 concentrations x 2 duplicate wells per row — see
+// exp2_100ul_report.md's Plate/well layout section), each group's two duplicate
+// wells get the identical compound at the identical concentration, so they share
+// one tip and one source well: attach once, aspirate the combined (2x) volume
+// once, dispense the per-well volume into each duplicate, eject once. No
+// nitrocefin and no reader here — after this run, let the compound incubate with
+// the enzyme off-robot, add nitrocefin by hand, then run
+// cfps_inhibitor_kinetic_read (Part 3b) to load the reader.
 //
 // Sandboxed iframe contract: only `react` may be imported, no network/FS, all host
 // communication via the injected `zeon.*` globals; `export default` the component.
@@ -34,19 +41,32 @@ declare const zeon: {
 
 const ROWS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 const COLS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-const MAX_DOSES = 8;
+const MAX_GROUPS = 4;
+
+// Mirrors skills/utils.py PIPETTES — (min, max) draw volume in uL per pipette.
+// Used only to warn client-side whether a group's combined (2x) aspirate fits in
+// one draw; the authoritative limits still live in the skill layer.
+const PIPETTE_LIMITS: Record<string, [number, number]> = {
+  epipette_10ul: [0.5, 10.0],
+  epipette_120ul: [10.0, 120.0],
+};
+const pipetteLimits = (name: string): [number, number] => {
+  const key = Object.keys(PIPETTE_LIMITS).find((k) => name.toLowerCase().includes(k.replace("epipette_", "")));
+  return PIPETTE_LIMITS[key || "epipette_10ul"] || PIPETTE_LIMITS.epipette_10ul;
+};
 
 const SANS = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
 const MONO = "ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace";
 const INK = "#16231C", MUTE = "#5B6B62", FAINT = "#94A29A";
 const LINE = "#E3E8E3", HAIR = "#EFF2EF", PAPER = "#FCFCFA";
 const ACCENT = "#9D174D", ACCENT_SOFT = "#FBEAF1"; // same family accent as Part 3b (nitrocefin-red)
+const GROUP_COLORS = ["#9D174D", "#B45309", "#3F6212", "#1D4ED8"]; // one per concentration group
 
 const S: Record<string, React.CSSProperties> = {
-  page: { fontFamily: SANS, color: INK, background: PAPER, padding: "34px 26px 46px", maxWidth: 760, margin: "0 auto", fontSize: 14, lineHeight: 1.55, WebkitFontSmoothing: "antialiased", height: "100vh", boxSizing: "border-box", overflowY: "auto" },
+  page: { fontFamily: SANS, color: INK, background: PAPER, padding: "34px 26px 46px", maxWidth: 780, margin: "0 auto", fontSize: 14, lineHeight: 1.55, WebkitFontSmoothing: "antialiased", height: "100vh", boxSizing: "border-box", overflowY: "auto" },
   eyebrow: { fontFamily: MONO, fontSize: 11, fontWeight: 600, letterSpacing: 1.6, textTransform: "uppercase", color: MUTE, margin: "0 0 12px", display: "flex", alignItems: "center", gap: 8 },
   h1: { fontFamily: SANS, fontSize: 27, fontWeight: 800, letterSpacing: -0.7, lineHeight: 1.05, margin: "0 0 10px", color: INK },
-  sub: { fontSize: 13.5, color: MUTE, margin: "0 0 4px", lineHeight: 1.6, maxWidth: "68ch" },
+  sub: { fontSize: 13.5, color: MUTE, margin: "0 0 4px", lineHeight: 1.6, maxWidth: "70ch" },
   rule: { height: 1, background: LINE, border: 0, margin: "22px 0 2px" },
   h2: { fontFamily: MONO, fontSize: 11, fontWeight: 700, margin: "36px 0 12px", paddingTop: 18, color: INK, textTransform: "uppercase", letterSpacing: 1.3, borderTop: `1px solid ${LINE}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 },
   smallBtn: { fontFamily: MONO, fontSize: 10.5, fontWeight: 700, color: ACCENT, background: "#fff", border: `1px solid ${LINE}`, borderRadius: 5, padding: "4px 9px", cursor: "pointer", textTransform: "uppercase", letterSpacing: 0.4, whiteSpace: "nowrap" },
@@ -88,21 +108,26 @@ const pickBy = (source: Source) => {
 };
 const strDefault = (k: string, fb: string) => pickBy("auto").s(k, fb);
 
-type DosePos = { well: string; compoundSrcWell: string; compoundVol: number };
+// A concentration group doses a shared source well into a duplicate PAIR of
+// destination wells, one tip and one aspirate covering both (see the workflow's
+// dose{i}_* inputs: well_a/well_b share tip_index and total_vol_ul).
+type GroupPos = { wellA: string; wellB: string; srcWell: string; volUl: number };
 
-// A planned round declares dose_n positions; without this the table opened empty
-// and every well and volume had to be re-entered by hand.
-const dosesFrom = (source: Source): DosePos[] => {
+// A planned round declares dose_n groups; without this the table opened empty
+// and every well, source, and volume had to be re-entered by hand.
+const groupsFrom = (source: Source): GroupPos[] => {
   const { s, n } = pickBy(source);
-  const count = Math.min(n("dose_n", 0), MAX_DOSES);
-  const out: DosePos[] = [];
+  const count = Math.min(n("dose_n", 0), MAX_GROUPS);
+  const out: GroupPos[] = [];
   for (let i = 1; i <= count; i++) {
-    const well = s(`dose${i}_well`, "");
-    if (!well) continue;
+    const wellA = s(`dose${i}_well_a`, "");
+    const wellB = s(`dose${i}_well_b`, "");
+    if (!wellA && !wellB) continue;
     out.push({
-      well,
-      compoundSrcWell: s(`dose${i}_compound_src_well`, ""),
-      compoundVol: n(`dose${i}_compound_vol_ul`, 0),
+      wellA,
+      wellB,
+      srcWell: s(`dose${i}_src_well`, ""),
+      volUl: n(`dose${i}_vol_ul`, 0),
     });
   }
   return out;
@@ -130,33 +155,49 @@ export default function CfpsInhibitorDoseScreen() {
   const [compoundId, setCompoundId] = useState(strDefault("compound_id", ""));
   const [runName, setRunName] = useState(strDefault("run_name", "cfps_inhibitor_dose_run"));
 
-  // Ordered list of dose positions — seeded from the planned round if one has been
-  // synced, otherwise empty for a human to build by clicking the plate map.
-  const [doses, setDoses] = useState<DosePos[]>(() => dosesFrom("auto"));
+  const [pipetteMax] = useMemo(() => pipetteLimits(pipetteP.init), [pipetteP.init]);
+
+  // Ordered list of concentration groups — seeded from the planned round if one
+  // has been synced, otherwise empty for a human to build by clicking the plate map.
+  const [groups, setGroups] = useState<GroupPos[]>(() => groupsFrom("auto"));
 
   const stagedDiffers = useMemo(() => {
-    const planned = dosesFrom("planned");
-    const staged = dosesFrom("staged");
+    const planned = groupsFrom("planned");
+    const staged = groupsFrom("staged");
     if (!staged.length) return false;
     return JSON.stringify(planned) !== JSON.stringify(staged);
   }, []);
   const loadFrom = (source: Source) => {
     const { s } = pickBy(source);
-    setDoses(dosesFrom(source));
+    setGroups(groupsFrom(source));
     setCompoundId(s("compound_id", ""));
     setRunName(s("run_name", "cfps_inhibitor_dose_run"));
   };
 
+  // Clicking a well already in a group removes it from that slot; otherwise it
+  // fills the first open slot (wellA before wellB) of an existing group, or opens
+  // a new group if under MAX_GROUPS. A group with only wellA filled is a partial
+  // pair — flagged at validate time, not blocked here, so the second click of a
+  // duplicate is easy.
   const toggleWell = (w: string) =>
-    setDoses((ds) => {
-      const idx = ds.findIndex((d) => d.well === w);
-      if (idx >= 0) return ds.filter((_, i) => i !== idx);
-      if (ds.length >= MAX_DOSES) return ds; // capped by the workflow's fixed 8-position graph
-      return [...ds, { well: w, compoundSrcWell: "", compoundVol: 0 }];
+    setGroups((gs) => {
+      const hitIdx = gs.findIndex((g) => g.wellA === w || g.wellB === w);
+      if (hitIdx >= 0) {
+        const g = gs[hitIdx];
+        const cleared = { ...g, wellA: g.wellA === w ? "" : g.wellA, wellB: g.wellB === w ? "" : g.wellB };
+        if (!cleared.wellA && !cleared.wellB) return gs.filter((_, i) => i !== hitIdx);
+        return gs.map((x, i) => (i === hitIdx ? cleared : x));
+      }
+      const openIdx = gs.findIndex((g) => !g.wellA || !g.wellB);
+      if (openIdx >= 0) {
+        return gs.map((g, i) => (i === openIdx ? { ...g, ...(!g.wellA ? { wellA: w } : { wellB: w }) } : g));
+      }
+      if (gs.length >= MAX_GROUPS) return gs; // capped by the workflow's fixed 4-group graph
+      return [...gs, { wellA: w, wellB: "", srcWell: "", volUl: 0 }];
     });
-  const updateDose = (i: number, patch: Partial<DosePos>) =>
-    setDoses((ds) => ds.map((d, j) => (j === i ? { ...d, ...patch } : d)));
-  const removeDose = (i: number) => setDoses((ds) => ds.filter((_, j) => j !== i));
+  const updateGroup = (i: number, patch: Partial<GroupPos>) =>
+    setGroups((gs) => gs.map((g, j) => (j === i ? { ...g, ...patch } : g)));
+  const removeGroup = (i: number) => setGroups((gs) => gs.filter((_, j) => j !== i));
 
   const [errors, setErrors] = useState<string[]>([]);
   useEffect(() => {
@@ -168,10 +209,16 @@ export default function CfpsInhibitorDoseScreen() {
     if (!pipette || !tipbox || !reactionPlate || !compoundLibrary) {
       e.push("Select the pipette, tip box, reaction plate, and compound library.");
     }
-    if (doses.length === 0) e.push("Click at least one well on the reaction plate — it must already hold expressed TEM1 reaction mix from Part 1.");
-    doses.forEach((d, i) => {
-      if (!d.compoundSrcWell.trim()) e.push(`Dose ${i + 1} (${d.well}): set a compound source well.`);
-      if (!(d.compoundVol > 0)) e.push(`Dose ${i + 1} (${d.well}): compound volume must be positive.`);
+    if (groups.length === 0) e.push("Click both duplicate wells for at least one concentration group — they must already hold expressed TEM1 reaction mix from Part 1.");
+    groups.forEach((g, i) => {
+      const n = i + 1;
+      if (!g.wellA || !g.wellB) e.push(`Group ${n}: pick both duplicate wells (currently ${[g.wellA, g.wellB].filter(Boolean).length}/2).`);
+      if (!g.srcWell.trim()) e.push(`Group ${n} (${g.wellA || "?"}/${g.wellB || "?"}): set a compound source well.`);
+      if (!(g.volUl > 0)) e.push(`Group ${n} (${g.wellA || "?"}/${g.wellB || "?"}): per-well compound volume must be positive.`);
+      const total = g.volUl * 2;
+      if (total > pipetteMax) {
+        e.push(`Group ${n}: combined draw ${total.toFixed(2)} uL (2 x ${g.volUl} uL) exceeds ${pipette}'s ${pipetteMax} uL capacity — lower the volume or split the duplicates onto separate tips.`);
+      }
     });
     return e;
   }
@@ -184,18 +231,21 @@ export default function CfpsInhibitorDoseScreen() {
     const values: Record<string, unknown> = {
       pipette, tipbox, reaction_plate: reactionPlate, compound_library: compoundLibrary,
       compound_id: compoundId.trim(),
-      dose_n: doses.length,
+      dose_n: groups.length,
       run_name: (runName || "").trim() || "cfps_inhibitor_dose_run",
     };
-    doses.forEach((d, i) => {
+    groups.forEach((g, i) => {
       const n = i + 1;
-      values[`dose${n}_well`] = d.well;
-      values[`dose${n}_compound_src_well`] = d.compoundSrcWell.trim();
-      values[`dose${n}_compound_vol_ul`] = d.compoundVol;
-      values[`dose${n}_compound_tip_index`] = n;
+      values[`dose${n}_well_a`] = g.wellA;
+      values[`dose${n}_well_b`] = g.wellB;
+      values[`dose${n}_src_well`] = g.srcWell.trim();
+      values[`dose${n}_vol_ul`] = g.volUl;
+      values[`dose${n}_total_vol_ul`] = g.volUl * 2;
+      values[`dose${n}_tip_index`] = n;
     });
-    // Unused dose slots (up to MAX_DOSES) stay at the workflow's zero-volume defaults —
-    // the graph has all 8 positions but dose_n tells later analysis how many are real.
+    // Unused group slots (up to MAX_GROUPS) stay at the workflow's zero-volume
+    // defaults — the graph has all 4 positions but dose_n tells later analysis
+    // how many are real.
     zeon.submit(values);
   }
 
@@ -214,7 +264,8 @@ export default function CfpsInhibitorDoseScreen() {
       </div>
       <h1 style={S.h1}>CFPS Inhibitor Dose</h1>
       <p style={S.sub}>
-        Doses each well you pick below with a compound volume from the compound library plate. Pick wells
+        Doses each concentration group you pick below into its duplicate pair of wells, drawing once from a
+        shared compound library source well and splitting into two equal dispenses on the same tip. Pick wells
         that already hold expressed TEM1 reaction mix from Part 1 (<code>cfps_mastermix</code>), confirmed by
         Part 2 (<code>cfps_sfgfp_confirmation</code>). No nitrocefin and no reader in this run — after this
         completes, let the compound incubate with the enzyme off-robot, add nitrocefin to every well by hand,
@@ -243,10 +294,13 @@ export default function CfpsInhibitorDoseScreen() {
       </div>
 
       <h2 style={S.h2}>
-        <span>Wells to dose — click up to {MAX_DOSES} on the reaction plate</span>
+        <span>Duplicate pairs — click 2 wells per group, up to {MAX_GROUPS} groups</span>
         <button type="button" style={S.smallBtn} onClick={() => loadFrom("planned")}>Load planned values</button>
       </h2>
-      <p style={S.sub}>Only click wells that already hold expressed TEM1 reaction mix from Part 1.</p>
+      <p style={S.sub}>
+        Only click wells that already hold expressed TEM1 reaction mix from Part 1. Each pair shares one source
+        well, one tip, and one aspirate — click the first well of a group, then its duplicate.
+      </p>
       {stagedDiffers && (
         <div style={S.staleBox}>
           <strong>Showing the planned round, not your staged draft.</strong> Staged values come from an
@@ -265,12 +319,14 @@ export default function CfpsInhibitorDoseScreen() {
             <div style={S.hdr}>{r}</div>
             {COLS.map((c) => {
               const w = `${r}${c}`;
-              const idx = doses.findIndex((d) => d.well === w);
+              const idx = groups.findIndex((g) => g.wellA === w || g.wellB === w);
               const active = idx >= 0;
+              const slot = active ? (groups[idx].wellA === w ? "A" : "B") : "";
+              const color = active ? GROUP_COLORS[idx % GROUP_COLORS.length] : "#fff";
               return (
                 <button key={w} type="button" title={w} onClick={() => toggleWell(w)}
-                        style={{ ...S.cell, background: active ? ACCENT : "#fff", color: active ? "#fff" : FAINT }}>
-                  {active ? idx + 1 : ""}
+                        style={{ ...S.cell, background: color, color: active ? "#fff" : FAINT }}>
+                  {active ? `${idx + 1}${slot}` : ""}
                 </button>
               );
             })}
@@ -278,42 +334,53 @@ export default function CfpsInhibitorDoseScreen() {
         ))}
       </div>
 
-      {doses.length === 0 ? (
-        <p style={{ ...S.sub, marginTop: 12 }}>No wells picked yet.</p>
+      {groups.length === 0 ? (
+        <p style={{ ...S.sub, marginTop: 12 }}>No groups picked yet.</p>
       ) : (
         <table style={S.table}>
           <thead>
             <tr>
-              <th style={S.th}>#</th><th style={S.th}>Well</th>
-              <th style={S.th}>Compound src well</th><th style={S.th}>Compound µL</th>
-              <th style={S.th}></th>
+              <th style={S.th}>#</th><th style={S.th}>Well A</th><th style={S.th}>Well B (dup)</th>
+              <th style={S.th}>Compound src well</th><th style={S.th}>µL / well</th>
+              <th style={S.th}>Aspirate (2x)</th><th style={S.th}></th>
             </tr>
           </thead>
           <tbody>
-            {doses.map((d, i) => (
-              <tr key={d.well}>
-                <td style={S.td}>{i + 1}</td>
-                <td style={{ ...S.td, fontFamily: MONO, fontWeight: 700 }}>{d.well}</td>
-                <td style={S.td}>
-                  <input style={S.textInput} value={d.compoundSrcWell} placeholder="A1"
-                         onChange={(e) => updateDose(i, { compoundSrcWell: e.target.value.toUpperCase() })} />
-                </td>
-                <td style={S.td}>
-                  <input type="number" min={0} step={0.1} style={S.numInput} value={d.compoundVol}
-                         onChange={(e) => updateDose(i, { compoundVol: parseFloat(e.target.value || "0") })} />
-                </td>
-                <td style={S.td}>
-                  <button type="button" style={S.removeBtn} onClick={() => removeDose(i)}>remove</button>
-                </td>
-              </tr>
-            ))}
+            {groups.map((g, i) => {
+              const total = g.volUl * 2;
+              const overCapacity = total > pipetteMax;
+              return (
+                <tr key={i}>
+                  <td style={{ ...S.td, color: GROUP_COLORS[i % GROUP_COLORS.length], fontWeight: 700 }}>{i + 1}</td>
+                  <td style={{ ...S.td, fontFamily: MONO, fontWeight: 700 }}>{g.wellA || "—"}</td>
+                  <td style={{ ...S.td, fontFamily: MONO, fontWeight: 700 }}>{g.wellB || "—"}</td>
+                  <td style={S.td}>
+                    <input style={S.textInput} value={g.srcWell} placeholder="A1"
+                           onChange={(e) => updateGroup(i, { srcWell: e.target.value.toUpperCase() })} />
+                  </td>
+                  <td style={S.td}>
+                    <input type="number" min={0} step={0.1} style={S.numInput} value={g.volUl}
+                           onChange={(e) => updateGroup(i, { volUl: parseFloat(e.target.value || "0") })} />
+                  </td>
+                  <td style={{ ...S.td, fontFamily: MONO, color: overCapacity ? "#8E2C1E" : MUTE, fontWeight: overCapacity ? 700 : 400 }}>
+                    {total.toFixed(1)} uL{overCapacity ? " ⚠" : ""}
+                  </td>
+                  <td style={S.td}>
+                    <button type="button" style={S.removeBtn} onClick={() => removeGroup(i)}>remove</button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
 
       <div style={{ ...S.card, background: ACCENT_SOFT, borderColor: "#F0C7D8" }}>
-        <strong style={{ color: ACCENT }}>Tip indices are assigned automatically</strong> — compound legs use
-        1..{MAX_DOSES}, in dose order. Make sure the tip box has at least {MAX_DOSES} fresh tips before running.
+        <strong style={{ color: ACCENT }}>One tip per group, not per well</strong> — each duplicate pair shares a
+        single tip index (1..{MAX_GROUPS}, in group order): attach once, aspirate the combined 2x volume once
+        from the shared source well, then dispense the per-well volume into wells A and B before ejecting. Make
+        sure the tip box has at least {MAX_GROUPS} fresh tips before running, and keep each group's combined
+        draw within the selected pipette's capacity ({pipetteMax} uL for {pipette || "the selected pipette"}).
       </div>
 
       {errors.length > 0 && (
@@ -321,7 +388,7 @@ export default function CfpsInhibitorDoseScreen() {
       )}
 
       <button type="button" style={S.button} onClick={run}>
-        Confirm setup — {doses.length} well{doses.length !== 1 ? "s" : ""} dosed
+        Confirm setup — {groups.length} group{groups.length !== 1 ? "s" : ""} ({groups.length * 2} wells)
       </button>
     </div>
   );

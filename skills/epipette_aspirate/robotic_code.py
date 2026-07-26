@@ -1,7 +1,15 @@
 import time
 
 from protocol_schema import SkillObject
-from utils import PRE_ASPIRATE_JOINTS, epipette_device, object_display_name
+from utils import (
+    PRE_ASPIRATE_JOINTS,
+    SLOW_ZONE_M,
+    epipette_device,
+    move_arm_ramped,
+    object_display_name,
+)
+
+from epipette_mix.robotic_code import epipette_mix
 
 from .modules import (
     EPIPETTE_10UL,
@@ -43,6 +51,11 @@ def epipette_aspirate(
     tip_extension_m: float = 0.02,
     depth_top_anchor: str = "depth_top",
     depth_bottom_anchor: str = "depth_bottom",
+    mix_cycles: int = 0,
+    mix_volume: float = 0.0,
+    mix_contents_volume: float = 0.0,
+    fast_speed: float = 80,
+    slow_zone_m: float = SLOW_ZONE_M,
 ):
     """Aspirate from a well/tube anchor, with heights measured from the well top.
 
@@ -82,6 +95,17 @@ def epipette_aspirate(
         tip_anchor: Anchor at the end of the epipette (the nozzle tip).
         tip_extension_m: Length of the physical disposable tip past ``tip_anchor``,
             along the pipette axis.
+        mix_cycles: Trituration cycles to run **while the tip is still at depth**,
+            before the retract. 0 (default) skips mixing entirely. Mixing here rather
+            than from a separate node is what keeps the tip submerged — this skill
+            always retracts to the hover height when it finishes, so a mix chained
+            after it would pump air.
+        mix_volume: Volume (uL) drawn and expelled each mix cycle.
+        mix_contents_volume: Total volume (uL) present in the well/tube — the upper
+            bound ``mix_volume`` must stay under (see ``epipette_mix``).
+        fast_speed: Speed for the bulk of the descent to the rim. Only the final
+            ``slow_zone_m`` runs at the slow rim speed.
+        slow_zone_m: Length of the slow tail on that descent, in meters.
     """
     object_id = object.id
     anchor_name = anchor
@@ -168,8 +192,17 @@ def epipette_aspirate(
     move_arm(arm="left_arm", position=[x, y, well_top_z + approach_height], orientation=tcp_orientation, speed=250)
     time.sleep(0.1)
 
-    # 2) Descend to just below the rim at medium speed.
-    move_arm(arm="left_arm", position=[x, y, well_top_z], orientation=tcp_orientation, speed=50)
+    # 2) Descend to the rim: fast for the bulk of the `approach_height`, medium only for
+    # the last `slow_zone_m`. The whole 15 cm used to run at the rim speed.
+    move_arm_ramped(
+        arm="left_arm",
+        position=[x, y, well_top_z],
+        orientation=tcp_orientation,
+        slow_speed=50,
+        fast_speed=fast_speed,
+        slow_zone_m=slow_zone_m,
+        start=[x, y, well_top_z + approach_height],
+    )
     time.sleep(0.1)
 
     # 3) Slow dip into the liquid.
@@ -189,7 +222,19 @@ def epipette_aspirate(
         runlog_type="aspirate",
     )
 
-    # 5) Retract back to the hover height.
+    # 5) Optional mix, still at depth. This has to happen before step 6 — the tip is
+    # submerged right now, and the retract below puts it `approach_height` above the
+    # liquid. epipette_mix works the plunger only and never moves the arm.
+    if mix_cycles > 0 and mix_volume > 0:
+        epipette_mix(
+            pipette=pipette,
+            mix_volume=mix_volume,
+            contents_volume=mix_contents_volume,
+            cycles=mix_cycles,
+            speed=speed,
+        )
+
+    # 6) Retract back to the hover height.
     move_arm(arm="left_arm", position=[x, y, well_top_z + approach_height], orientation=tcp_orientation, speed=100, wait=True)
     time.sleep(0.1)
 

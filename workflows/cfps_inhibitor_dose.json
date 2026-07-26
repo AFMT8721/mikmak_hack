@@ -1,8 +1,8 @@
 {
   "workflow_id": "cfps_inhibitor_dose",
   "name": "CFPS Inhibitor Dose (Part 3a)",
-  "description": "Part 3a of the TEM-1 inhibitor screen: doses each of up to 8 already-expressed TEM1 wells (built by cfps_mastermix / Part 1, confirmed by cfps_sfgfp_confirmation / Part 2) with its own compound volume from a pre-arrayed compound_library plate. No nitrocefin here and no mixing step \u2014 mixing-in-place was dropped project-wide (the tip retracts fully at the end of every epipette_dispense, so a separate mix-in-place node never actually had liquid to work with). After this run, let the compound incubate with the enzyme off-robot, then add nitrocefin by hand, then run cfps_inhibitor_kinetic_read (Part 3b) to load the plate into the reader.",
-  "version": "1.0.0",
+  "description": "Part 3a of the TEM-1 inhibitor screen: doses up to 4 already-expressed TEM1 concentration groups (built by cfps_mastermix / Part 1, confirmed by cfps_sfgfp_confirmation / Part 2) from a pre-arrayed compound_library plate holding one working-stock well per concentration. The plate map is one compound per run, 4 concentrations x 2 duplicate wells (see cfps_inhibitor_dose_response's row layout, e.g. exp2_100ul_report.md's Plate/well layout section) \u2014 each group shares a single tip and a single source well across its duplicate pair: one attach, one aspirate of the combined (2x) volume, two equal dispenses, one eject. No nitrocefin here and no mixing step \u2014 mixing-in-place was dropped project-wide (the tip retracts fully at the end of every epipette_dispense, so a separate mix-in-place node never actually had liquid to work with). After this run, let the compound incubate with the enzyme off-robot, then add nitrocefin by hand, then run cfps_inhibitor_kinetic_read (Part 3b) to load the plate into the reader.",
+  "version": "2.0.0",
   "author": "pipeline",
   "created_at": "2026-07-26T00:00:00.000Z",
   "updated_at": "2026-07-26T00:00:00.000Z",
@@ -34,7 +34,7 @@
       "name": "compound_library",
       "type": "object",
       "is_array": false,
-      "description": "Pre-arrayed compound stock-dilution plate (operator-prepped off-workflow)",
+      "description": "Pre-arrayed compound working-stock plate (operator-prepped off-workflow): one source well per concentration",
       "defaultValue": "wellplate_pcr_parts_2"
     },
     {
@@ -48,8 +48,8 @@
       "name": "dose_n",
       "type": "int",
       "is_array": false,
-      "description": "Number of dosed wells this run (must match the doseN_* inputs actually populated, max 8)",
-      "defaultValue": 8
+      "description": "Number of concentration groups this run (each group doses its shared source into a duplicate pair of wells); must match the doseN_* inputs actually populated, max 4",
+      "defaultValue": 4
     },
     {
       "name": "run_name",
@@ -59,228 +59,172 @@
       "defaultValue": "cfps_inhibitor_dose_run"
     },
     {
-      "name": "dose1_well",
+      "name": "dose1_src_well",
       "type": "string",
       "is_array": false,
-      "description": "Existing Part-1 sample well to dose at position 1 (must already contain expressed TEM1 reaction mix)",
+      "description": "compound_library source well for concentration group 1 (shared by both duplicate wells)",
       "defaultValue": ""
     },
     {
-      "name": "dose1_compound_src_well",
+      "name": "dose1_well_a",
       "type": "string",
       "is_array": false,
-      "description": "compound_library source well for dose position 1",
+      "description": "First Part-1 sample well for group 1 (must already contain expressed TEM1 reaction mix)",
       "defaultValue": ""
     },
     {
-      "name": "dose1_compound_vol_ul",
+      "name": "dose1_well_b",
+      "type": "string",
+      "is_array": false,
+      "description": "Duplicate Part-1 sample well for group 1 (must already contain expressed TEM1 reaction mix)",
+      "defaultValue": ""
+    },
+    {
+      "name": "dose1_vol_ul",
       "type": "float",
       "is_array": false,
-      "description": "Compound volume (uL) for dose position 1",
+      "description": "Compound volume (uL) dispensed into EACH of group 1's two duplicate wells",
       "defaultValue": 0.0
     },
     {
-      "name": "dose1_compound_tip_index",
+      "name": "dose1_total_vol_ul",
+      "type": "float",
+      "is_array": false,
+      "description": "Group 1's single aspirate volume (uL) \u2014 the sum dispensed into both duplicate wells; must fit the pipette's capacity in one draw",
+      "defaultValue": 0.0
+    },
+    {
+      "name": "dose1_tip_index",
       "type": "int",
       "is_array": false,
-      "description": "Tip index for the compound leg at position 1",
+      "description": "Tip index for group 1's shared tip (used for the aspirate and both dispenses)",
       "defaultValue": 1
     },
     {
-      "name": "dose2_well",
+      "name": "dose2_src_well",
       "type": "string",
       "is_array": false,
-      "description": "Existing Part-1 sample well to dose at position 2 (must already contain expressed TEM1 reaction mix)",
+      "description": "compound_library source well for concentration group 2 (shared by both duplicate wells)",
       "defaultValue": ""
     },
     {
-      "name": "dose2_compound_src_well",
+      "name": "dose2_well_a",
       "type": "string",
       "is_array": false,
-      "description": "compound_library source well for dose position 2",
+      "description": "First Part-1 sample well for group 2 (must already contain expressed TEM1 reaction mix)",
       "defaultValue": ""
     },
     {
-      "name": "dose2_compound_vol_ul",
+      "name": "dose2_well_b",
+      "type": "string",
+      "is_array": false,
+      "description": "Duplicate Part-1 sample well for group 2 (must already contain expressed TEM1 reaction mix)",
+      "defaultValue": ""
+    },
+    {
+      "name": "dose2_vol_ul",
       "type": "float",
       "is_array": false,
-      "description": "Compound volume (uL) for dose position 2",
+      "description": "Compound volume (uL) dispensed into EACH of group 2's two duplicate wells",
       "defaultValue": 0.0
     },
     {
-      "name": "dose2_compound_tip_index",
+      "name": "dose2_total_vol_ul",
+      "type": "float",
+      "is_array": false,
+      "description": "Group 2's single aspirate volume (uL) \u2014 the sum dispensed into both duplicate wells; must fit the pipette's capacity in one draw",
+      "defaultValue": 0.0
+    },
+    {
+      "name": "dose2_tip_index",
       "type": "int",
       "is_array": false,
-      "description": "Tip index for the compound leg at position 2",
+      "description": "Tip index for group 2's shared tip (used for the aspirate and both dispenses)",
       "defaultValue": 2
     },
     {
-      "name": "dose3_well",
+      "name": "dose3_src_well",
       "type": "string",
       "is_array": false,
-      "description": "Existing Part-1 sample well to dose at position 3 (must already contain expressed TEM1 reaction mix)",
+      "description": "compound_library source well for concentration group 3 (shared by both duplicate wells)",
       "defaultValue": ""
     },
     {
-      "name": "dose3_compound_src_well",
+      "name": "dose3_well_a",
       "type": "string",
       "is_array": false,
-      "description": "compound_library source well for dose position 3",
+      "description": "First Part-1 sample well for group 3 (must already contain expressed TEM1 reaction mix)",
       "defaultValue": ""
     },
     {
-      "name": "dose3_compound_vol_ul",
+      "name": "dose3_well_b",
+      "type": "string",
+      "is_array": false,
+      "description": "Duplicate Part-1 sample well for group 3 (must already contain expressed TEM1 reaction mix)",
+      "defaultValue": ""
+    },
+    {
+      "name": "dose3_vol_ul",
       "type": "float",
       "is_array": false,
-      "description": "Compound volume (uL) for dose position 3",
+      "description": "Compound volume (uL) dispensed into EACH of group 3's two duplicate wells",
       "defaultValue": 0.0
     },
     {
-      "name": "dose3_compound_tip_index",
+      "name": "dose3_total_vol_ul",
+      "type": "float",
+      "is_array": false,
+      "description": "Group 3's single aspirate volume (uL) \u2014 the sum dispensed into both duplicate wells; must fit the pipette's capacity in one draw",
+      "defaultValue": 0.0
+    },
+    {
+      "name": "dose3_tip_index",
       "type": "int",
       "is_array": false,
-      "description": "Tip index for the compound leg at position 3",
+      "description": "Tip index for group 3's shared tip (used for the aspirate and both dispenses)",
       "defaultValue": 3
     },
     {
-      "name": "dose4_well",
+      "name": "dose4_src_well",
       "type": "string",
       "is_array": false,
-      "description": "Existing Part-1 sample well to dose at position 4 (must already contain expressed TEM1 reaction mix)",
+      "description": "compound_library source well for concentration group 4 (shared by both duplicate wells)",
       "defaultValue": ""
     },
     {
-      "name": "dose4_compound_src_well",
+      "name": "dose4_well_a",
       "type": "string",
       "is_array": false,
-      "description": "compound_library source well for dose position 4",
+      "description": "First Part-1 sample well for group 4 (must already contain expressed TEM1 reaction mix)",
       "defaultValue": ""
     },
     {
-      "name": "dose4_compound_vol_ul",
+      "name": "dose4_well_b",
+      "type": "string",
+      "is_array": false,
+      "description": "Duplicate Part-1 sample well for group 4 (must already contain expressed TEM1 reaction mix)",
+      "defaultValue": ""
+    },
+    {
+      "name": "dose4_vol_ul",
       "type": "float",
       "is_array": false,
-      "description": "Compound volume (uL) for dose position 4",
+      "description": "Compound volume (uL) dispensed into EACH of group 4's two duplicate wells",
       "defaultValue": 0.0
     },
     {
-      "name": "dose4_compound_tip_index",
+      "name": "dose4_total_vol_ul",
+      "type": "float",
+      "is_array": false,
+      "description": "Group 4's single aspirate volume (uL) \u2014 the sum dispensed into both duplicate wells; must fit the pipette's capacity in one draw",
+      "defaultValue": 0.0
+    },
+    {
+      "name": "dose4_tip_index",
       "type": "int",
       "is_array": false,
-      "description": "Tip index for the compound leg at position 4",
+      "description": "Tip index for group 4's shared tip (used for the aspirate and both dispenses)",
       "defaultValue": 4
-    },
-    {
-      "name": "dose5_well",
-      "type": "string",
-      "is_array": false,
-      "description": "Existing Part-1 sample well to dose at position 5 (must already contain expressed TEM1 reaction mix)",
-      "defaultValue": ""
-    },
-    {
-      "name": "dose5_compound_src_well",
-      "type": "string",
-      "is_array": false,
-      "description": "compound_library source well for dose position 5",
-      "defaultValue": ""
-    },
-    {
-      "name": "dose5_compound_vol_ul",
-      "type": "float",
-      "is_array": false,
-      "description": "Compound volume (uL) for dose position 5",
-      "defaultValue": 0.0
-    },
-    {
-      "name": "dose5_compound_tip_index",
-      "type": "int",
-      "is_array": false,
-      "description": "Tip index for the compound leg at position 5",
-      "defaultValue": 5
-    },
-    {
-      "name": "dose6_well",
-      "type": "string",
-      "is_array": false,
-      "description": "Existing Part-1 sample well to dose at position 6 (must already contain expressed TEM1 reaction mix)",
-      "defaultValue": ""
-    },
-    {
-      "name": "dose6_compound_src_well",
-      "type": "string",
-      "is_array": false,
-      "description": "compound_library source well for dose position 6",
-      "defaultValue": ""
-    },
-    {
-      "name": "dose6_compound_vol_ul",
-      "type": "float",
-      "is_array": false,
-      "description": "Compound volume (uL) for dose position 6",
-      "defaultValue": 0.0
-    },
-    {
-      "name": "dose6_compound_tip_index",
-      "type": "int",
-      "is_array": false,
-      "description": "Tip index for the compound leg at position 6",
-      "defaultValue": 6
-    },
-    {
-      "name": "dose7_well",
-      "type": "string",
-      "is_array": false,
-      "description": "Existing Part-1 sample well to dose at position 7 (must already contain expressed TEM1 reaction mix)",
-      "defaultValue": ""
-    },
-    {
-      "name": "dose7_compound_src_well",
-      "type": "string",
-      "is_array": false,
-      "description": "compound_library source well for dose position 7",
-      "defaultValue": ""
-    },
-    {
-      "name": "dose7_compound_vol_ul",
-      "type": "float",
-      "is_array": false,
-      "description": "Compound volume (uL) for dose position 7",
-      "defaultValue": 0.0
-    },
-    {
-      "name": "dose7_compound_tip_index",
-      "type": "int",
-      "is_array": false,
-      "description": "Tip index for the compound leg at position 7",
-      "defaultValue": 7
-    },
-    {
-      "name": "dose8_well",
-      "type": "string",
-      "is_array": false,
-      "description": "Existing Part-1 sample well to dose at position 8 (must already contain expressed TEM1 reaction mix)",
-      "defaultValue": ""
-    },
-    {
-      "name": "dose8_compound_src_well",
-      "type": "string",
-      "is_array": false,
-      "description": "compound_library source well for dose position 8",
-      "defaultValue": ""
-    },
-    {
-      "name": "dose8_compound_vol_ul",
-      "type": "float",
-      "is_array": false,
-      "description": "Compound volume (uL) for dose position 8",
-      "defaultValue": 0.0
-    },
-    {
-      "name": "dose8_compound_tip_index",
-      "type": "int",
-      "is_array": false,
-      "description": "Tip index for the compound leg at position 8",
-      "defaultValue": 8
     }
   ],
   "nodes": [
@@ -313,47 +257,69 @@
           "$input": "pipette"
         },
         "tip_index": {
-          "$input": "dose1_compound_tip_index"
+          "$input": "dose1_tip_index"
         }
       }
     },
     {
       "node_id": "dose1_aspirate",
       "type": "skill",
-      "label": "Aspirate (dose1)",
+      "label": "Aspirate (dose1, combined for duplicates)",
+      "description": "One draw covers both duplicate wells below \u2014 total_vol_ul is the sum of the two equal dispenses that follow, so the source well and tip are only touched once per concentration.",
       "skill_id": "epipette_aspirate",
       "parameters": {
         "object": {
           "$input": "compound_library"
         },
         "anchor": {
-          "$input": "dose1_compound_src_well"
+          "$input": "dose1_src_well"
         },
         "pipette": {
           "$input": "pipette"
         },
         "volume": {
-          "$input": "dose1_compound_vol_ul"
+          "$input": "dose1_total_vol_ul"
         }
       }
     },
     {
-      "node_id": "dose1_dispense",
+      "node_id": "dose1_dispense_a",
       "type": "skill",
-      "label": "Dispense (dose1)",
+      "label": "Dispense (dose1, well A)",
       "skill_id": "epipette_dispense",
       "parameters": {
         "object": {
           "$input": "reaction_plate"
         },
         "anchor": {
-          "$input": "dose1_well"
+          "$input": "dose1_well_a"
         },
         "pipette": {
           "$input": "pipette"
         },
         "volume": {
-          "$input": "dose1_compound_vol_ul"
+          "$input": "dose1_vol_ul"
+        }
+      }
+    },
+    {
+      "node_id": "dose1_dispense_b",
+      "type": "skill",
+      "label": "Dispense (dose1, duplicate well B)",
+      "description": "Same tip as well A above \u2014 no re-attach between the duplicate pair, since both wells receive the identical compound at the identical concentration.",
+      "skill_id": "epipette_dispense",
+      "parameters": {
+        "object": {
+          "$input": "reaction_plate"
+        },
+        "anchor": {
+          "$input": "dose1_well_b"
+        },
+        "pipette": {
+          "$input": "pipette"
+        },
+        "volume": {
+          "$input": "dose1_vol_ul"
         }
       }
     },
@@ -381,47 +347,69 @@
           "$input": "pipette"
         },
         "tip_index": {
-          "$input": "dose2_compound_tip_index"
+          "$input": "dose2_tip_index"
         }
       }
     },
     {
       "node_id": "dose2_aspirate",
       "type": "skill",
-      "label": "Aspirate (dose2)",
+      "label": "Aspirate (dose2, combined for duplicates)",
+      "description": "One draw covers both duplicate wells below \u2014 total_vol_ul is the sum of the two equal dispenses that follow, so the source well and tip are only touched once per concentration.",
       "skill_id": "epipette_aspirate",
       "parameters": {
         "object": {
           "$input": "compound_library"
         },
         "anchor": {
-          "$input": "dose2_compound_src_well"
+          "$input": "dose2_src_well"
         },
         "pipette": {
           "$input": "pipette"
         },
         "volume": {
-          "$input": "dose2_compound_vol_ul"
+          "$input": "dose2_total_vol_ul"
         }
       }
     },
     {
-      "node_id": "dose2_dispense",
+      "node_id": "dose2_dispense_a",
       "type": "skill",
-      "label": "Dispense (dose2)",
+      "label": "Dispense (dose2, well A)",
       "skill_id": "epipette_dispense",
       "parameters": {
         "object": {
           "$input": "reaction_plate"
         },
         "anchor": {
-          "$input": "dose2_well"
+          "$input": "dose2_well_a"
         },
         "pipette": {
           "$input": "pipette"
         },
         "volume": {
-          "$input": "dose2_compound_vol_ul"
+          "$input": "dose2_vol_ul"
+        }
+      }
+    },
+    {
+      "node_id": "dose2_dispense_b",
+      "type": "skill",
+      "label": "Dispense (dose2, duplicate well B)",
+      "description": "Same tip as well A above \u2014 no re-attach between the duplicate pair, since both wells receive the identical compound at the identical concentration.",
+      "skill_id": "epipette_dispense",
+      "parameters": {
+        "object": {
+          "$input": "reaction_plate"
+        },
+        "anchor": {
+          "$input": "dose2_well_b"
+        },
+        "pipette": {
+          "$input": "pipette"
+        },
+        "volume": {
+          "$input": "dose2_vol_ul"
         }
       }
     },
@@ -449,47 +437,69 @@
           "$input": "pipette"
         },
         "tip_index": {
-          "$input": "dose3_compound_tip_index"
+          "$input": "dose3_tip_index"
         }
       }
     },
     {
       "node_id": "dose3_aspirate",
       "type": "skill",
-      "label": "Aspirate (dose3)",
+      "label": "Aspirate (dose3, combined for duplicates)",
+      "description": "One draw covers both duplicate wells below \u2014 total_vol_ul is the sum of the two equal dispenses that follow, so the source well and tip are only touched once per concentration.",
       "skill_id": "epipette_aspirate",
       "parameters": {
         "object": {
           "$input": "compound_library"
         },
         "anchor": {
-          "$input": "dose3_compound_src_well"
+          "$input": "dose3_src_well"
         },
         "pipette": {
           "$input": "pipette"
         },
         "volume": {
-          "$input": "dose3_compound_vol_ul"
+          "$input": "dose3_total_vol_ul"
         }
       }
     },
     {
-      "node_id": "dose3_dispense",
+      "node_id": "dose3_dispense_a",
       "type": "skill",
-      "label": "Dispense (dose3)",
+      "label": "Dispense (dose3, well A)",
       "skill_id": "epipette_dispense",
       "parameters": {
         "object": {
           "$input": "reaction_plate"
         },
         "anchor": {
-          "$input": "dose3_well"
+          "$input": "dose3_well_a"
         },
         "pipette": {
           "$input": "pipette"
         },
         "volume": {
-          "$input": "dose3_compound_vol_ul"
+          "$input": "dose3_vol_ul"
+        }
+      }
+    },
+    {
+      "node_id": "dose3_dispense_b",
+      "type": "skill",
+      "label": "Dispense (dose3, duplicate well B)",
+      "description": "Same tip as well A above \u2014 no re-attach between the duplicate pair, since both wells receive the identical compound at the identical concentration.",
+      "skill_id": "epipette_dispense",
+      "parameters": {
+        "object": {
+          "$input": "reaction_plate"
+        },
+        "anchor": {
+          "$input": "dose3_well_b"
+        },
+        "pipette": {
+          "$input": "pipette"
+        },
+        "volume": {
+          "$input": "dose3_vol_ul"
         }
       }
     },
@@ -517,47 +527,69 @@
           "$input": "pipette"
         },
         "tip_index": {
-          "$input": "dose4_compound_tip_index"
+          "$input": "dose4_tip_index"
         }
       }
     },
     {
       "node_id": "dose4_aspirate",
       "type": "skill",
-      "label": "Aspirate (dose4)",
+      "label": "Aspirate (dose4, combined for duplicates)",
+      "description": "One draw covers both duplicate wells below \u2014 total_vol_ul is the sum of the two equal dispenses that follow, so the source well and tip are only touched once per concentration.",
       "skill_id": "epipette_aspirate",
       "parameters": {
         "object": {
           "$input": "compound_library"
         },
         "anchor": {
-          "$input": "dose4_compound_src_well"
+          "$input": "dose4_src_well"
         },
         "pipette": {
           "$input": "pipette"
         },
         "volume": {
-          "$input": "dose4_compound_vol_ul"
+          "$input": "dose4_total_vol_ul"
         }
       }
     },
     {
-      "node_id": "dose4_dispense",
+      "node_id": "dose4_dispense_a",
       "type": "skill",
-      "label": "Dispense (dose4)",
+      "label": "Dispense (dose4, well A)",
       "skill_id": "epipette_dispense",
       "parameters": {
         "object": {
           "$input": "reaction_plate"
         },
         "anchor": {
-          "$input": "dose4_well"
+          "$input": "dose4_well_a"
         },
         "pipette": {
           "$input": "pipette"
         },
         "volume": {
-          "$input": "dose4_compound_vol_ul"
+          "$input": "dose4_vol_ul"
+        }
+      }
+    },
+    {
+      "node_id": "dose4_dispense_b",
+      "type": "skill",
+      "label": "Dispense (dose4, duplicate well B)",
+      "description": "Same tip as well A above \u2014 no re-attach between the duplicate pair, since both wells receive the identical compound at the identical concentration.",
+      "skill_id": "epipette_dispense",
+      "parameters": {
+        "object": {
+          "$input": "reaction_plate"
+        },
+        "anchor": {
+          "$input": "dose4_well_b"
+        },
+        "pipette": {
+          "$input": "pipette"
+        },
+        "volume": {
+          "$input": "dose4_vol_ul"
         }
       }
     },
@@ -565,278 +597,6 @@
       "node_id": "dose4_eject",
       "type": "skill",
       "label": "Eject tip (dose4)",
-      "skill_id": "epipette_eject",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        }
-      }
-    },
-    {
-      "node_id": "dose5_attach",
-      "type": "skill",
-      "label": "Attach tip (dose5)",
-      "skill_id": "epipette_attach",
-      "parameters": {
-        "tipbox": {
-          "$input": "tipbox"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "tip_index": {
-          "$input": "dose5_compound_tip_index"
-        }
-      }
-    },
-    {
-      "node_id": "dose5_aspirate",
-      "type": "skill",
-      "label": "Aspirate (dose5)",
-      "skill_id": "epipette_aspirate",
-      "parameters": {
-        "object": {
-          "$input": "compound_library"
-        },
-        "anchor": {
-          "$input": "dose5_compound_src_well"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "volume": {
-          "$input": "dose5_compound_vol_ul"
-        }
-      }
-    },
-    {
-      "node_id": "dose5_dispense",
-      "type": "skill",
-      "label": "Dispense (dose5)",
-      "skill_id": "epipette_dispense",
-      "parameters": {
-        "object": {
-          "$input": "reaction_plate"
-        },
-        "anchor": {
-          "$input": "dose5_well"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "volume": {
-          "$input": "dose5_compound_vol_ul"
-        }
-      }
-    },
-    {
-      "node_id": "dose5_eject",
-      "type": "skill",
-      "label": "Eject tip (dose5)",
-      "skill_id": "epipette_eject",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        }
-      }
-    },
-    {
-      "node_id": "dose6_attach",
-      "type": "skill",
-      "label": "Attach tip (dose6)",
-      "skill_id": "epipette_attach",
-      "parameters": {
-        "tipbox": {
-          "$input": "tipbox"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "tip_index": {
-          "$input": "dose6_compound_tip_index"
-        }
-      }
-    },
-    {
-      "node_id": "dose6_aspirate",
-      "type": "skill",
-      "label": "Aspirate (dose6)",
-      "skill_id": "epipette_aspirate",
-      "parameters": {
-        "object": {
-          "$input": "compound_library"
-        },
-        "anchor": {
-          "$input": "dose6_compound_src_well"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "volume": {
-          "$input": "dose6_compound_vol_ul"
-        }
-      }
-    },
-    {
-      "node_id": "dose6_dispense",
-      "type": "skill",
-      "label": "Dispense (dose6)",
-      "skill_id": "epipette_dispense",
-      "parameters": {
-        "object": {
-          "$input": "reaction_plate"
-        },
-        "anchor": {
-          "$input": "dose6_well"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "volume": {
-          "$input": "dose6_compound_vol_ul"
-        }
-      }
-    },
-    {
-      "node_id": "dose6_eject",
-      "type": "skill",
-      "label": "Eject tip (dose6)",
-      "skill_id": "epipette_eject",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        }
-      }
-    },
-    {
-      "node_id": "dose7_attach",
-      "type": "skill",
-      "label": "Attach tip (dose7)",
-      "skill_id": "epipette_attach",
-      "parameters": {
-        "tipbox": {
-          "$input": "tipbox"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "tip_index": {
-          "$input": "dose7_compound_tip_index"
-        }
-      }
-    },
-    {
-      "node_id": "dose7_aspirate",
-      "type": "skill",
-      "label": "Aspirate (dose7)",
-      "skill_id": "epipette_aspirate",
-      "parameters": {
-        "object": {
-          "$input": "compound_library"
-        },
-        "anchor": {
-          "$input": "dose7_compound_src_well"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "volume": {
-          "$input": "dose7_compound_vol_ul"
-        }
-      }
-    },
-    {
-      "node_id": "dose7_dispense",
-      "type": "skill",
-      "label": "Dispense (dose7)",
-      "skill_id": "epipette_dispense",
-      "parameters": {
-        "object": {
-          "$input": "reaction_plate"
-        },
-        "anchor": {
-          "$input": "dose7_well"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "volume": {
-          "$input": "dose7_compound_vol_ul"
-        }
-      }
-    },
-    {
-      "node_id": "dose7_eject",
-      "type": "skill",
-      "label": "Eject tip (dose7)",
-      "skill_id": "epipette_eject",
-      "parameters": {
-        "pipette": {
-          "$input": "pipette"
-        }
-      }
-    },
-    {
-      "node_id": "dose8_attach",
-      "type": "skill",
-      "label": "Attach tip (dose8)",
-      "skill_id": "epipette_attach",
-      "parameters": {
-        "tipbox": {
-          "$input": "tipbox"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "tip_index": {
-          "$input": "dose8_compound_tip_index"
-        }
-      }
-    },
-    {
-      "node_id": "dose8_aspirate",
-      "type": "skill",
-      "label": "Aspirate (dose8)",
-      "skill_id": "epipette_aspirate",
-      "parameters": {
-        "object": {
-          "$input": "compound_library"
-        },
-        "anchor": {
-          "$input": "dose8_compound_src_well"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "volume": {
-          "$input": "dose8_compound_vol_ul"
-        }
-      }
-    },
-    {
-      "node_id": "dose8_dispense",
-      "type": "skill",
-      "label": "Dispense (dose8)",
-      "skill_id": "epipette_dispense",
-      "parameters": {
-        "object": {
-          "$input": "reaction_plate"
-        },
-        "anchor": {
-          "$input": "dose8_well"
-        },
-        "pipette": {
-          "$input": "pipette"
-        },
-        "volume": {
-          "$input": "dose8_compound_vol_ul"
-        }
-      }
-    },
-    {
-      "node_id": "dose8_eject",
-      "type": "skill",
-      "label": "Eject tip (dose8)",
       "skill_id": "epipette_eject",
       "parameters": {
         "pipette": {
@@ -909,6 +669,14 @@
       }
     },
     {
+      "edge_id": "e_save_run_start_grab_pipette",
+      "from_node": "save_run_start",
+      "to_node": "grab_pipette",
+      "condition": {
+        "type": "default"
+      }
+    },
+    {
       "edge_id": "e_grab_pipette_dose1_attach",
       "from_node": "grab_pipette",
       "to_node": "dose1_attach",
@@ -925,16 +693,24 @@
       }
     },
     {
-      "edge_id": "e_dose1_aspirate_dose1_dispense",
+      "edge_id": "e_dose1_aspirate_dose1_dispense_a",
       "from_node": "dose1_aspirate",
-      "to_node": "dose1_dispense",
+      "to_node": "dose1_dispense_a",
       "condition": {
         "type": "on_success"
       }
     },
     {
-      "edge_id": "e_dose1_dispense_dose1_eject",
-      "from_node": "dose1_dispense",
+      "edge_id": "e_dose1_dispense_a_dose1_dispense_b",
+      "from_node": "dose1_dispense_a",
+      "to_node": "dose1_dispense_b",
+      "condition": {
+        "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_dose1_dispense_b_dose1_eject",
+      "from_node": "dose1_dispense_b",
       "to_node": "dose1_eject",
       "condition": {
         "type": "on_success"
@@ -957,16 +733,24 @@
       }
     },
     {
-      "edge_id": "e_dose2_aspirate_dose2_dispense",
+      "edge_id": "e_dose2_aspirate_dose2_dispense_a",
       "from_node": "dose2_aspirate",
-      "to_node": "dose2_dispense",
+      "to_node": "dose2_dispense_a",
       "condition": {
         "type": "on_success"
       }
     },
     {
-      "edge_id": "e_dose2_dispense_dose2_eject",
-      "from_node": "dose2_dispense",
+      "edge_id": "e_dose2_dispense_a_dose2_dispense_b",
+      "from_node": "dose2_dispense_a",
+      "to_node": "dose2_dispense_b",
+      "condition": {
+        "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_dose2_dispense_b_dose2_eject",
+      "from_node": "dose2_dispense_b",
       "to_node": "dose2_eject",
       "condition": {
         "type": "on_success"
@@ -989,16 +773,24 @@
       }
     },
     {
-      "edge_id": "e_dose3_aspirate_dose3_dispense",
+      "edge_id": "e_dose3_aspirate_dose3_dispense_a",
       "from_node": "dose3_aspirate",
-      "to_node": "dose3_dispense",
+      "to_node": "dose3_dispense_a",
       "condition": {
         "type": "on_success"
       }
     },
     {
-      "edge_id": "e_dose3_dispense_dose3_eject",
-      "from_node": "dose3_dispense",
+      "edge_id": "e_dose3_dispense_a_dose3_dispense_b",
+      "from_node": "dose3_dispense_a",
+      "to_node": "dose3_dispense_b",
+      "condition": {
+        "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_dose3_dispense_b_dose3_eject",
+      "from_node": "dose3_dispense_b",
       "to_node": "dose3_eject",
       "condition": {
         "type": "on_success"
@@ -1021,155 +813,43 @@
       }
     },
     {
-      "edge_id": "e_dose4_aspirate_dose4_dispense",
+      "edge_id": "e_dose4_aspirate_dose4_dispense_a",
       "from_node": "dose4_aspirate",
-      "to_node": "dose4_dispense",
+      "to_node": "dose4_dispense_a",
       "condition": {
         "type": "on_success"
       }
     },
     {
-      "edge_id": "e_dose4_dispense_dose4_eject",
-      "from_node": "dose4_dispense",
+      "edge_id": "e_dose4_dispense_a_dose4_dispense_b",
+      "from_node": "dose4_dispense_a",
+      "to_node": "dose4_dispense_b",
+      "condition": {
+        "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_dose4_dispense_b_dose4_eject",
+      "from_node": "dose4_dispense_b",
       "to_node": "dose4_eject",
       "condition": {
         "type": "on_success"
       }
     },
     {
-      "edge_id": "e_dose4_eject_dose5_attach",
+      "edge_id": "e_dose4_eject_save_run_mid",
       "from_node": "dose4_eject",
-      "to_node": "dose5_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose5_attach_dose5_aspirate",
-      "from_node": "dose5_attach",
-      "to_node": "dose5_aspirate",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose5_aspirate_dose5_dispense",
-      "from_node": "dose5_aspirate",
-      "to_node": "dose5_dispense",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose5_dispense_dose5_eject",
-      "from_node": "dose5_dispense",
-      "to_node": "dose5_eject",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose5_eject_dose6_attach",
-      "from_node": "dose5_eject",
-      "to_node": "dose6_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose6_attach_dose6_aspirate",
-      "from_node": "dose6_attach",
-      "to_node": "dose6_aspirate",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose6_aspirate_dose6_dispense",
-      "from_node": "dose6_aspirate",
-      "to_node": "dose6_dispense",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose6_dispense_dose6_eject",
-      "from_node": "dose6_dispense",
-      "to_node": "dose6_eject",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose6_eject_dose7_attach",
-      "from_node": "dose6_eject",
-      "to_node": "dose7_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose7_attach_dose7_aspirate",
-      "from_node": "dose7_attach",
-      "to_node": "dose7_aspirate",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose7_aspirate_dose7_dispense",
-      "from_node": "dose7_aspirate",
-      "to_node": "dose7_dispense",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose7_dispense_dose7_eject",
-      "from_node": "dose7_dispense",
-      "to_node": "dose7_eject",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose7_eject_dose8_attach",
-      "from_node": "dose7_eject",
-      "to_node": "dose8_attach",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose8_attach_dose8_aspirate",
-      "from_node": "dose8_attach",
-      "to_node": "dose8_aspirate",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose8_aspirate_dose8_dispense",
-      "from_node": "dose8_aspirate",
-      "to_node": "dose8_dispense",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose8_dispense_dose8_eject",
-      "from_node": "dose8_dispense",
-      "to_node": "dose8_eject",
-      "condition": {
-        "type": "on_success"
-      }
-    },
-    {
-      "edge_id": "e_dose8_eject_save_run_mid",
-      "from_node": "dose8_eject",
       "to_node": "save_run_mid",
       "condition": {
         "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_save_run_mid_place_pipette",
+      "from_node": "save_run_mid",
+      "to_node": "place_pipette",
+      "condition": {
+        "type": "default"
       }
     },
     {
@@ -1187,29 +867,13 @@
       "condition": {
         "type": "on_success"
       }
-    },
-    {
-      "edge_id": "e_save_run_start_grab_pipette",
-      "from_node": "save_run_start",
-      "to_node": "grab_pipette",
-      "condition": {
-        "type": "default"
-      }
-    },
-    {
-      "edge_id": "e_save_run_mid_place_pipette",
-      "from_node": "save_run_mid",
-      "to_node": "place_pipette",
-      "condition": {
-        "type": "default"
-      }
     }
   ],
   "canvas_ui": {
     "kind": "react",
     "source_ref": "canvas/cfps_inhibitor_dose_screen.tsx",
     "enabled": true,
-    "version": 1,
+    "version": 2,
     "updated_at": "2026-07-26T00:00:00.000Z"
   }
 }

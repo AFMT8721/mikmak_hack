@@ -30,7 +30,6 @@ from utils import (
 from epipette_aspirate.robotic_code import epipette_aspirate
 from epipette_dispense.robotic_code import epipette_dispense
 from epipette_eject.robotic_code import epipette_eject
-from epipette_mix.robotic_code import epipette_mix
 
 from .modules import print_log
 
@@ -175,10 +174,11 @@ def cfps_make_mastermix(
         tips_used += k
         strokes_used += k
 
-    # Homogenise the tube in place (no centrifuge). Descend into the liquid ONCE via
-    # the full aspirate skill as a POSITIONING move only (volume=0, no draw; it does
-    # not retract), then delegate the mixing to the epipette_mix skill, so the arm
-    # stays put in the well between cycles instead of re-approaching.
+    # Homogenise the tube in place (no centrifuge). One aspirate call does the whole
+    # thing: volume=0 makes it a positioning move (no draw), and the mix_* arguments
+    # run the trituration cycles inside it, while the tip is still submerged, before it
+    # retracts. Mixing from a separate node after the aspirate would pump air — the
+    # aspirate skill always retracts to its hover height when it finishes.
     #
     # Mix with whatever pipette the transfers left in hand, clamped to its range
     # — the 120 uL pipette can't do the 8 uL default, so it mixes at its 10 uL
@@ -190,8 +190,16 @@ def cfps_make_mastermix(
     _rl(f"  ↻ Mixing {mm_anchor}: {cycles} plunger cycles of {mv} uL in place with {pipette_name(mix_pipette)} (no centrifuge)")
     _attach_next_tip(mix_tipbox, mix_pipette)
     tips_used += 1
-    epipette_aspirate(object=reagent_block, anchor=mm_anchor, pipette=mix_pipette, volume=0.0, speed=speed)  # descend only, no draw
-    epipette_mix(pipette=mix_pipette, mix_volume=mv, contents_volume=tube_total, cycles=cycles, speed=speed)
+    epipette_aspirate(
+        object=reagent_block,
+        anchor=mm_anchor,
+        pipette=mix_pipette,
+        volume=0.0,  # positioning only, no draw
+        speed=speed,
+        mix_cycles=cycles,
+        mix_volume=mv,
+        mix_contents_volume=tube_total,
+    )
     strokes_used += cycles
     epipette_eject(pipette=mix_pipette)
 

@@ -2,12 +2,11 @@ import time
 
 from execution.skill_editing import shared_state
 from protocol_schema import SkillObject
-from utils import LEFT_ARM_STOW_JOINTS
+from utils import LEFT_ARM_STOW_JOINTS, SLOW_ZONE_M, move_arm_ramped
 
 from .modules import (
     detach_object_from_arm,
     load_object_anchor,
-    move_arm,
     move_arm_js,
     print_log,
     set_gripper,
@@ -24,6 +23,8 @@ def epipette_place(
     grasp_anchor: str = "grab",
     prepose: str = "grab_prepose",
     postpose: str = "grab_postpose",
+    fast_speed: float = 100,
+    slow_zone_m: float = SLOW_ZONE_M,
 ):
     """Place a pipette back down at a named grasp anchor and release it.
 
@@ -50,6 +51,10 @@ def epipette_place(
         postpose: Optional anchor name to move to before descending to the grasp
             (the reverse of grab's in-place reorient). Pass an empty string to skip
             it; skipped with a warning if unavailable.
+        fast_speed: Speed for the bulk of every Cartesian leg. Only the final
+            ``slow_zone_m`` of each runs at that leg's original slow speed — the whole
+            approach and descent used to run at 30.
+        slow_zone_m: Length of the slow tail on each leg, in meters.
     """
     print_log(runlog=True, runlog_type="step_start")
     print_log(f"Starting epipette_place (anchor={grasp_anchor}, prepose={prepose}, postpose={postpose})")
@@ -71,13 +76,21 @@ def epipette_place(
         return None
 
     def _goto(pose, speed):
+        """Travel to a waypoint, slow only for the final `slow_zone_m`.
+
+        `speed` is the leg's original speed and stays in force for the touch-down; the
+        bulk runs at `fast_speed`. A leg shorter than the slow zone is emitted as one
+        slow move, so short hops are unchanged.
+        """
         if not pose:
             return
-        move_arm(
+        move_arm_ramped(
             arm="left_arm",
             position=pose["xyz"],
             orientation=pose["rpy"],
-            speed=speed,
+            slow_speed=speed,
+            fast_speed=fast_speed,
+            slow_zone_m=slow_zone_m,
             wait=True,
         )
 

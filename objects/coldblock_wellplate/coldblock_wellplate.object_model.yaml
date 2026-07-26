@@ -113,8 +113,8 @@ anchors:
       wxyz: [0.707107, 0.0, 0.0, -0.707107]
   depth_bottom:
     parent_link: body
-    description: Depth reference — 2.81 cm below the hole top. distance(depth_top, depth_bottom)
-      = 2.81 cm = how far the tip descends below the hole top when aspirating/dispensing.
+    description: Depth reference — 2.91 cm below the hole top. distance(depth_top, depth_bottom)
+      = 2.91 cm = how far the tip descends below the hole top when aspirating/dispensing.
     link_T_anchor:
-      xyz: [-0.000376688, -0.000492797, 0.007688]
+      xyz: [-0.000376688, -0.000492797, 0.006688]
       wxyz: [0.707107, 0.0, 0.0, -0.707107]

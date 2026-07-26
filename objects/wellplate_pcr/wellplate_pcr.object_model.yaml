@@ -638,8 +638,8 @@ anchors:
       wxyz: [1.0, 0.0, 0.0, 0.0]
   depth_bottom:
     parent_link: body
-    description: Depth reference — 9 mm below depth_top (0.01549 - 0.009). Same XY
+    description: Depth reference — 10 mm below depth_top (0.01549 - 0.010). Same XY
       as depth_top; the Z gap is the descent depth below the well top.
     link_T_anchor:
-      xyz: [0.06388, 0.04274, 0.00649]
+      xyz: [0.06388, 0.04274, 0.00549]
       wxyz: [1.0, 0.0, 0.0, 0.0]

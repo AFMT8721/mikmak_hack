@@ -1,7 +1,7 @@
 import time
 
 from protocol_schema import SkillObject
-from utils import object_display_name
+from utils import SLOW_ZONE_M, move_arm_ramped, object_display_name
 
 from .modules import (
     compute_dispense_orientation,
@@ -28,7 +28,13 @@ ARM_ORIENTATION = [-0.977, -1.555, -2.200]
 ATTACH_JOINTS = [0.893, 0.354, -1.207, -0.881, 2.177, 2.538]
 
 
-def epipette_attach(tipbox: SkillObject, pipette: SkillObject, tip_index: int = 1):
+def epipette_attach(
+    tipbox: SkillObject,
+    pipette: SkillObject,
+    tip_index: int = 1,
+    fast_speed: float = 60,
+    slow_zone_m: float = SLOW_ZONE_M,
+):
     """Attach a single rack tip to the held pipette — calibration-file mock of epipette_grey_attach.
 
     Unlike the anchor-driven attach, this positions the tip exactly like
@@ -48,6 +54,10 @@ def epipette_attach(tipbox: SkillObject, pipette: SkillObject, tip_index: int = 
     Args:
         tipbox: The tip rack to attach from.
         tip_index: 1-based tip to use; selects the ``calibration_<pipette_name>`` entry str(tip_index).
+        fast_speed: Speed for the bulk of the press descent. ``attach_depths[0]`` sits
+            2-4 cm above the tip, so only the final ``slow_zone_m`` of that travel needs
+            the slow press speed. The settle onto the tip is unaffected.
+        slow_zone_m: Length of the slow tail on the press descent, in meters.
     """
 
     print_log(runlog=True, runlog_type="step_start")
@@ -96,8 +106,18 @@ def epipette_attach(tipbox: SkillObject, pipette: SkillObject, tip_index: int = 
     # Descend close to the tip top.
     move_arm(arm="left_arm", position=[x, y, ref_z + attach_depths[0]], orientation=attach_orientation, speed=60)
 
-    # Press down onto the tip.
-    move_arm(arm="left_arm", position=[x, y, ref_z + attach_depths[1]], orientation=attach_orientation, speed=10)
+    # Press down onto the tip: fast until `slow_zone_m` short of the press depth, then
+    # the slow press speed. depths[0] -> depths[1] is 4-5 cm, which used to run entirely
+    # at the press speed.
+    move_arm_ramped(
+        arm="left_arm",
+        position=[x, y, ref_z + attach_depths[1]],
+        orientation=attach_orientation,
+        slow_speed=10,
+        fast_speed=fast_speed,
+        slow_zone_m=slow_zone_m,
+        start=[x, y, ref_z + attach_depths[0]],
+    )
     time.sleep(0.1)
 
     # Settle.
