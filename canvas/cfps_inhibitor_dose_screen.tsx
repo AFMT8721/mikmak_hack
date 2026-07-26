@@ -167,7 +167,7 @@ export default function CfpsInhibitorDoseScreen() {
   const [enzymeVolUl, setEnzymeVolUl] = useState(numDefault("enzyme_vol_ul", 40.0));
   const [runName, setRunName] = useState(strDefault("run_name", "cfps_inhibitor_dose_run"));
 
-  const [pipetteMax] = useMemo(() => pipetteLimits(pipette), [pipette]);
+  const [, pipetteMax] = useMemo(() => pipetteLimits(pipette), [pipette]);
   const totalVolUl = enzymeVolUl * 2;
   const overCapacity = totalVolUl > pipetteMax;
 
