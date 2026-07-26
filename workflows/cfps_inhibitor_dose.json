@@ -1,8 +1,8 @@
 {
   "workflow_id": "cfps_inhibitor_dose",
   "name": "CFPS Inhibitor Dose (Part 3a)",
-  "description": "Part 3a of the TEM-1 inhibitor screen, sized to the purified-enzyme dose-response design in exp2_100ul_report.md: 5 compound rows (A-E, 4 concentrations x 2 duplicate wells each, compound preplated by hand before this run) plus a vehicle-control row (F1-F4, 2 duplicate pairs) -- 44 wells total, one robot run. Compound, vehicle, and (later) nitrocefin are all manual, off-robot; the robot's only job here is enzyme, dispensed from a fresh per-row aliquot tube in reagent_block. Each row keeps one tip for its whole span (source and volume are constant across a row's wells), and each duplicate pair shares a single aspirate: one draw of enzyme_total_vol_ul (2x enzyme_vol_ul) split into two equal dispenses, so the aliquot tube is only touched once per pair. The F5-F8 no-enzyme-blank wells get buffer by hand instead and have no nodes here. After this run, compound+enzyme incubate off-robot, nitrocefin is added by hand, then cfps_inhibitor_kinetic_read (Part 3b) loads the plate into the reader.",
-  "version": "3.0.0",
+  "description": "Part 3a of the TEM-1 inhibitor screen, sized to the purified-enzyme dose-response design in exp2_100ul_report.md: 5 compound rows (A-E, 4 concentrations x 2 duplicate wells each, compound preplated by hand before this run) plus a vehicle-control row (F1-F4, 2 duplicate pairs) -- 44 wells total, one robot run. Compound, vehicle, and (later) nitrocefin are all manual, off-robot; the robot's only job here is enzyme, dispensed from a fresh per-row aliquot tube in reagent_block. Each row keeps one tip for its whole span (source and volume are constant across a row's wells), and each duplicate pair shares a single aspirate: one draw of enzyme_total_vol_ul (2x enzyme_vol_ul) split into two equal dispenses, so the aliquot tube is only touched once per pair. The F5-F8 no-enzyme-blank wells get buffer by hand instead and have no nodes here. After the last row's enzyme is dispensed, the robot seals the plate and loads it into the shaker/incubator (lid closed) -- from there, starting and monitoring the incubation, adding nitrocefin by hand, and running cfps_inhibitor_kinetic_read (Part 3b) to load the reader are all manual.",
+  "version": "3.1.0",
   "author": "pipeline",
   "created_at": "2026-07-26T00:00:00.000Z",
   "updated_at": "2026-07-26T00:00:00.000Z",
@@ -491,6 +491,48 @@
       "is_array": false,
       "description": "row6 duplicate pair 2, well B (duplicate of A)",
       "defaultValue": "F4"
+    },
+    {
+      "name": "platesealer",
+      "type": "object",
+      "is_array": false,
+      "description": "PlateMax plate sealer",
+      "defaultValue": "platesealer_platemax_1"
+    },
+    {
+      "name": "seal_holder",
+      "type": "object",
+      "is_array": false,
+      "description": "Stacked seal holder to peel a seal from",
+      "defaultValue": "seal_holder_stacked_reinforced_1"
+    },
+    {
+      "name": "plate_home",
+      "type": "object",
+      "is_array": false,
+      "description": "Object carrying the plate's home anchor (where the sealed plate is set back down before being re-grabbed for the incubator)",
+      "defaultValue": "wellplate_holder_tags"
+    },
+    {
+      "name": "seal_index",
+      "type": "int",
+      "is_array": false,
+      "description": "1-based seal position in the holder to pick",
+      "defaultValue": 1
+    },
+    {
+      "name": "shaker",
+      "type": "object",
+      "is_array": false,
+      "description": "Wellplate shaker/incubator",
+      "defaultValue": "wellplate_shaker_1"
+    },
+    {
+      "name": "shaker_slot",
+      "type": "string",
+      "is_array": false,
+      "description": "Shaker slot anchor to load the plate into",
+      "defaultValue": "slot_1"
     }
   ],
   "nodes": [
@@ -2060,6 +2102,87 @@
       }
     },
     {
+      "node_id": "seal",
+      "type": "skill",
+      "label": "Seal Plate",
+      "description": "Grab the reaction plate short-side, seal it on the PlateMax (open door, load, pick + place seal, close door, press seal), unload it, and drop it back home.",
+      "skill_id": "seal_plate",
+      "parameters": {
+        "plate": {
+          "$input": "reaction_plate"
+        },
+        "platesealer": {
+          "$input": "platesealer"
+        },
+        "seal_holder": {
+          "$input": "seal_holder"
+        },
+        "home_destination": {
+          "$input": "plate_home"
+        },
+        "home_anchor": "home",
+        "grasp_anchor": "grasp_shortside",
+        "seal_index": {
+          "$input": "seal_index"
+        }
+      }
+    },
+    {
+      "node_id": "shaker_open",
+      "type": "skill",
+      "label": "Open Incubator Lid",
+      "description": "Open the shaker/incubator lid before the arm reaches in -- never grab toward a machine that's still closed.",
+      "skill_id": "wellplate_shaker_open",
+      "parameters": {
+        "shaker": {
+          "$input": "shaker"
+        }
+      }
+    },
+    {
+      "node_id": "regrab_plate",
+      "type": "skill",
+      "label": "Re-grab Sealed Plate",
+      "description": "Pick the sealed plate back up (short-side) to carry it to the incubator.",
+      "skill_id": "wellplate_grab",
+      "parameters": {
+        "object": {
+          "$input": "reaction_plate"
+        },
+        "grasp_anchor": "grasp_shortside"
+      }
+    },
+    {
+      "node_id": "shaker_load",
+      "type": "skill",
+      "label": "Load Plate Into Incubator",
+      "description": "Place the sealed plate into the incubator slot and release it.",
+      "skill_id": "wellplate_shaker_load",
+      "parameters": {
+        "object": {
+          "$input": "reaction_plate"
+        },
+        "wellplate_shaker": {
+          "$input": "shaker"
+        },
+        "slot_anchor": {
+          "$input": "shaker_slot"
+        }
+      }
+    },
+    {
+      "node_id": "shaker_close",
+      "type": "skill",
+      "label": "Close Incubator Lid (run ends here)",
+      "description": "Final robot action. The sealed plate is left in the closed incubator -- starting/monitoring the incubation and retrieving the plate afterward (to add nitrocefin by hand) are manual from here.",
+      "skill_id": "wellplate_shaker_close",
+      "parameters": {
+        "shaker": {
+          "$input": "shaker"
+        }
+      }
+    },
+    {
       "node_id": "save_run",
       "type": "skill",
       "label": "Save Run Folder",
@@ -2761,17 +2884,57 @@
       }
     },
     {
-      "edge_id": "e_place_pipette_save_run",
-      "from_node": "place_pipette",
-      "to_node": "save_run",
+      "edge_id": "e_save_run_end_1",
+      "from_node": "save_run",
+      "to_node": "end_1",
       "condition": {
         "type": "on_success"
       }
     },
     {
-      "edge_id": "e_save_run_end_1",
-      "from_node": "save_run",
-      "to_node": "end_1",
+      "edge_id": "e_place_pipette_seal",
+      "from_node": "place_pipette",
+      "to_node": "seal",
+      "condition": {
+        "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_seal_shaker_open",
+      "from_node": "seal",
+      "to_node": "shaker_open",
+      "condition": {
+        "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_shaker_open_regrab_plate",
+      "from_node": "shaker_open",
+      "to_node": "regrab_plate",
+      "condition": {
+        "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_regrab_plate_shaker_load",
+      "from_node": "regrab_plate",
+      "to_node": "shaker_load",
+      "condition": {
+        "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_shaker_load_shaker_close",
+      "from_node": "shaker_load",
+      "to_node": "shaker_close",
+      "condition": {
+        "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_shaker_close_save_run",
+      "from_node": "shaker_close",
+      "to_node": "save_run",
       "condition": {
         "type": "on_success"
       }
@@ -2781,7 +2944,7 @@
     "kind": "react",
     "source_ref": "canvas/cfps_inhibitor_dose_screen.tsx",
     "enabled": true,
-    "version": 3,
+    "version": 4,
     "updated_at": "2026-07-26T00:00:00.000Z"
   }
 }

@@ -159,6 +159,10 @@ export default function CfpsInhibitorDoseScreen() {
   const tipboxP = useMemo(() => pick((m) => m.includes("tipbox") && !m.includes("holder"), "tipbox", "tipbox_120ul_1"), []);
   const plateP = useMemo(() => pick((m) => m.includes("wellplate") && !m.includes("coldblock") && !m.includes("holder") && !m.includes("shaker") && !m.includes("pcr"), "reaction_plate", "wellplate_96_flatbottom"), []);
   const blockP = useMemo(() => pick((m) => m.includes("coldblock"), "reagent_block", "coldblock_wellplate"), []);
+  const sealerP = useMemo(() => pick((m) => m.includes("sealer"), "platesealer", "platesealer_platemax_1"), []);
+  const sealHolderP = useMemo(() => pick((m) => m.includes("seal_holder") || (m.includes("seal") && m.includes("holder")), "seal_holder", "seal_holder_stacked_reinforced_1"), []);
+  const shakerP = useMemo(() => pick((m) => m.includes("shaker") && !m.includes("holder"), "shaker", "wellplate_shaker_1"), []);
+  const plateHomeP = useMemo(() => pick((m) => m.includes("holder") && m.includes("wellplate"), "plate_home", "wellplate_holder_tags"), []);
 
   const [pipette, setPipette] = useState(pipetteP.init);
   const [tipbox, setTipbox] = useState(tipboxP.init);
@@ -166,6 +170,15 @@ export default function CfpsInhibitorDoseScreen() {
   const [reagentBlock, setReagentBlock] = useState(blockP.init);
   const [enzymeVolUl, setEnzymeVolUl] = useState(numDefault("enzyme_vol_ul", 40.0));
   const [runName, setRunName] = useState(strDefault("run_name", "cfps_inhibitor_dose_run"));
+
+  // Post-pipetting: seal the plate, then load it into the shaker/incubator (lid
+  // closed) and stop — starting/monitoring the incubation is manual from there.
+  const [platesealer, setPlatesealer] = useState(sealerP.init);
+  const [sealHolder, setSealHolder] = useState(sealHolderP.init);
+  const [shaker, setShaker] = useState(shakerP.init);
+  const [plateHome, setPlateHome] = useState(plateHomeP.init);
+  const [shakerSlot, setShakerSlot] = useState(strDefault("shaker_slot", "slot_1"));
+  const [sealIndex, setSealIndex] = useState(numDefault("seal_index", 1));
 
   const [, pipetteMax] = useMemo(() => pipetteLimits(pipette), [pipette]);
   const totalVolUl = enzymeVolUl * 2;
@@ -181,10 +194,12 @@ export default function CfpsInhibitorDoseScreen() {
     return JSON.stringify(planned) !== JSON.stringify(staged);
   }, []);
   const loadFrom = (source: Source) => {
-    const { n } = pickBy(source);
+    const { s, n } = pickBy(source);
     setRows(allRowsFrom(source));
     setEnzymeVolUl(n("enzyme_vol_ul", 40.0));
-    setRunName(pickBy(source).s("run_name", "cfps_inhibitor_dose_run"));
+    setRunName(s("run_name", "cfps_inhibitor_dose_run"));
+    setShakerSlot(s("shaker_slot", "slot_1"));
+    setSealIndex(n("seal_index", 1));
   };
 
   const updateRow = (key: string, patch: Partial<RowState>) =>
@@ -205,6 +220,11 @@ export default function CfpsInhibitorDoseScreen() {
     if (!pipette || !tipbox || !reactionPlate || !reagentBlock) {
       e.push("Select the pipette, tip box, reaction plate, and reagent block (enzyme aliquots).");
     }
+    if (!platesealer || !sealHolder || !plateHome || !shaker) {
+      e.push("Select the plate sealer, seal holder, plate home, and shaker/incubator.");
+    }
+    if (!shakerSlot.trim()) e.push("Set the shaker slot anchor to load the plate into.");
+    if (!(sealIndex >= 1)) e.push("Seal index must be at least 1.");
     if (!(enzymeVolUl > 0)) e.push("Enzyme volume per well must be positive.");
     if (overCapacity) {
       e.push(`Combined draw ${totalVolUl.toFixed(1)} uL (2 x ${enzymeVolUl} uL) exceeds ${pipette}'s ${pipetteMax} uL capacity — lower the enzyme volume or use a larger pipette.`);
@@ -228,6 +248,9 @@ export default function CfpsInhibitorDoseScreen() {
       pipette, tipbox, reaction_plate: reactionPlate, reagent_block: reagentBlock,
       enzyme_vol_ul: enzymeVolUl,
       enzyme_total_vol_ul: totalVolUl,
+      platesealer, seal_holder: sealHolder, plate_home: plateHome, shaker,
+      shaker_slot: shakerSlot.trim() || "slot_1",
+      seal_index: Math.max(1, Math.round(sealIndex || 1)),
       run_name: (runName || "").trim() || "cfps_inhibitor_dose_run",
     };
     ROW_DEFS.forEach((rd, ri) => {
@@ -276,8 +299,9 @@ export default function CfpsInhibitorDoseScreen() {
         run is enzyme, drawn from a fresh per-row aliquot tube in the reagent block and dispensed into every
         well below. Each row keeps one tip for its whole span; each duplicate pair shares a single aspirate (2x
         the per-well volume) split into two equal dispenses. F5-F8 (no-enzyme-blanks) get buffer by hand instead
-        and are not touched here. After this run, let compound + enzyme incubate off-robot, add nitrocefin by
-        hand, then run <code>cfps_inhibitor_kinetic_read</code> (Part 3b) to load the plate into the reader.
+        and are not touched here. Once every row is dosed, the robot seals the plate and loads it into the
+        shaker/incubator with the lid closed — starting/monitoring the incubation, adding nitrocefin by hand,
+        and running <code>cfps_inhibitor_kinetic_read</code> (Part 3b) to load the reader are all manual from there.
       </p>
       <hr style={S.rule} />
 
@@ -287,6 +311,23 @@ export default function CfpsInhibitorDoseScreen() {
         <div><label style={S.label}>Reagent block (enzyme aliquots)</label>{objSelect(reagentBlock, setReagentBlock, blockP.list)}</div>
         <div><label style={S.label}>Pipette</label>{objSelect(pipette, setPipette, pipetteP.list)}</div>
         <div><label style={S.label}>Tip box</label>{objSelect(tipbox, setTipbox, tipboxP.list)}</div>
+      </div>
+
+      <h2 style={S.h2}><span>Seal & incubator — after the last row is dosed</span></h2>
+      <div style={S.grid2}>
+        <div><label style={S.label}>Plate sealer</label>{objSelect(platesealer, setPlatesealer, sealerP.list)}</div>
+        <div><label style={S.label}>Seal holder</label>{objSelect(sealHolder, setSealHolder, sealHolderP.list)}</div>
+        <div><label style={S.label}>Shaker / incubator</label>{objSelect(shaker, setShaker, shakerP.list)}</div>
+        <div><label style={S.label}>Plate home (seal drop target)</label>{objSelect(plateHome, setPlateHome, plateHomeP.list)}</div>
+        <div>
+          <label style={S.label}>Shaker slot</label>
+          <input style={S.field} value={shakerSlot} onChange={(e) => setShakerSlot(e.target.value)} placeholder="slot_1" />
+        </div>
+        <div>
+          <label style={S.label}>Seal index</label>
+          <input type="number" min={1} step={1} style={S.field} value={sealIndex}
+                 onChange={(e) => setSealIndex(parseInt(e.target.value || "1", 10))} />
+        </div>
       </div>
 
       <h2 style={S.h2}><span>Enzyme volume & run</span></h2>
