@@ -28,6 +28,126 @@ INPUTS_DIR = PROJECT_ROOT / "inputs"
 CFPS_EXPRESSION_CONFIRM_DELAY_MINUTES = 30
 
 
+def discover_executions() -> list[dict]:
+    """Every execution present in the project tree, linked to a round or not.
+
+    Keyed off the `data/logs/<execution_id>/` directory rather than a `run_name`
+    match, because run_name matching only ever finds runs that finished: it needs
+    `run_inputs.json`, which used to be written solely by the final node. A run
+    that died partway, or one recovered from an app log export, has a directory
+    but may have no run_name at all — and those are precisely the runs worth
+    seeing. Anything on disk is reported here; attribution is a separate step.
+    """
+    out: list[dict] = []
+    if not DATA_LOGS_DIR.exists():
+        return out
+    for exec_dir in sorted(DATA_LOGS_DIR.iterdir()):
+        if not exec_dir.is_dir():
+            continue
+        rec: dict = {
+            "execution_id": exec_dir.name,
+            "run_name": None,
+            "complete": None,
+            "last_checkpoint": None,
+            "source": None,
+            "workflow_id": None,
+            "started": None,
+            "folders": [],
+        }
+        for run_dir in sorted(p for p in exec_dir.iterdir() if p.is_dir()):
+            rec["folders"].append(run_dir.name)
+            status = _read_json(run_dir / "run_status.json")
+            meta = _read_json(run_dir / "metadata.json")
+            inputs = _read_json(run_dir / "run_inputs.json")
+            if status:
+                rec["run_name"] = status.get("run_name") or rec["run_name"]
+                rec["complete"] = status.get("complete", rec["complete"])
+                rec["last_checkpoint"] = status.get("last_checkpoint") or rec["last_checkpoint"]
+                rec["source"] = status.get("source") or rec["source"]
+            if meta:
+                # The app writes `workflow_ref` (workflow id + world id); our own
+                # ingest writes `workflow_id`. Fall back through both, then to the
+                # execution directory name, which the app builds the same way.
+                rec["workflow_id"] = (
+                    meta.get("workflow_id")
+                    or _resolve_workflow(meta.get("workflow_ref", ""))
+                    or rec["workflow_id"]
+                )
+                rec["started"] = meta.get("started") or meta.get("created_at") or rec["started"]
+                rec["name"] = meta.get("name")
+        if not rec["workflow_id"]:
+            rec["workflow_id"] = _resolve_workflow(exec_dir.name[len("exec_"):]) or None
+            if inputs and not rec["run_name"]:
+                rec["run_name"] = inputs.get("run_name")
+        rec["has_platereader_export"] = platereader_export_ready(exec_dir.name)
+        out.append(rec)
+    return out
+
+
+def _resolve_workflow(ref: str) -> str | None:
+    """`<workflow_id>_<world_id>` (or a bare id) -> the workflow file it names."""
+    if not ref:
+        return None
+    from ingest_run import resolve_workflow  # same rule, defined once
+
+    return resolve_workflow(ref)
+
+
+def _read_json(path: Path) -> dict | None:
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text())
+    except json.JSONDecodeError:
+        return None
+
+
+def execution_to_round() -> dict[str, str]:
+    """Map execution_id -> round_id from the beads DAG (the linked-execution children)."""
+    mapping: dict[str, str] = {}
+    for rnd in bw.list_rounds():
+        for child in bw.list_children(rnd["id"]):
+            eid = (child.get("metadata") or {}).get("execution_id")
+            if eid:
+                mapping[eid] = rnd["id"]
+    return mapping
+
+
+def reconcile_executions(create_missing: bool = True) -> list[dict]:
+    """Ensure every execution on disk is represented in the beads DAG.
+
+    An unattributed physical run is the thing this pipeline must never have, so an
+    execution with no round gets one — labelled `assay:unplanned`, so it is never
+    confused with an experiment that came through Plan.
+    """
+    linked = execution_to_round()
+    results = []
+    for rec in discover_executions():
+        eid = rec["execution_id"]
+        round_id = linked.get(eid)
+        action = "already-linked"
+        if round_id is None and create_missing:
+            rnd = bw.create_unplanned_round(
+                workflow_id=rec.get("workflow_id") or "unknown",
+                execution_id=eid,
+                started_at=rec.get("started") or "",
+                source=rec.get("source") or "app",
+            )
+            round_id = rnd.id
+            bw.link_execution(round_id, "run", eid)
+            bw.record_run_outcome(
+                round_id, execution_id=eid,
+                complete=bool(rec.get("complete")),
+                last_step=rec.get("last_checkpoint") or "",
+                detail="discovered in data/logs with no planned round",
+            )
+            action = "created-unplanned-round"
+        elif round_id is None:
+            action = "orphan"
+        results.append({**rec, "round_id": round_id, "action": action})
+    return results
+
+
 def expected_run_name(round_id: str) -> str | None:
     """The run_name a Plan-generated preset asked the operator to use — only
     exists for kinetics/inhibitor_dose_response rounds (cfps_expression rounds
@@ -131,11 +251,28 @@ if __name__ == "__main__":
     import time
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("round_id")
+    parser.add_argument("round_id", nargs="?", help="omit with --reconcile / --list")
     parser.add_argument("--part1-run-name", help="cfps_expression rounds only")
     parser.add_argument("--part2-run-name", help="cfps_expression rounds only")
     parser.add_argument("--poll-seconds", type=int, default=0, help="0 = check once and exit")
+    parser.add_argument("--list", action="store_true",
+                        help="show every execution in data/logs and whether it's linked")
+    parser.add_argument("--reconcile", action="store_true",
+                        help="give every unattributed execution an 'unplanned' round")
     args = parser.parse_args()
+
+    if args.list or args.reconcile:
+        rows = reconcile_executions(create_missing=args.reconcile)
+        for r in rows:
+            state = ("complete" if r.get("complete") is True
+                     else "STOPPED" if r.get("complete") is False else "unknown")
+            print(f"{r['action']:26} {str(r['round_id']):12} {state:8} {r['execution_id']}")
+        if not rows:
+            print("no executions in data/logs yet")
+        raise SystemExit(0)
+
+    if not args.round_id:
+        parser.error("round_id is required unless --list or --reconcile is given")
 
     def check() -> dict:
         round_ = bw.show_round(args.round_id)

@@ -227,5 +227,13 @@ __marimo__/
 # ADK web session state (per-agent, machine-local)
 pipeline/agents/*/.adk/
 
-# zeon's local content-addressed object cache — rebuildable from the cloud
+# Per-machine zeon state. HEAD/refs/INDEX are pointers INTO .zeon/objects, which is
+# a local content-addressed cache rebuilt from the cloud. Committing them means one
+# machine's pointers land in another's checkout, aiming at objects it doesn't have —
+# which is exactly how HEAD ended up resolving to a 0-file tree on 2026-07-26.
+# .zeon/config (project_id + remote_url) IS shared and stays tracked.
 .zeon/objects/
+.zeon/refs/
+.zeon/remote_refs/
+.zeon/HEAD
+.zeon/INDEX

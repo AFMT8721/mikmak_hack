@@ -1643,20 +1643,47 @@
       "parameters": {
         "run_name": {
           "$input": "run_name"
-        }
+        },
+        "checkpoint": "end"
       }
     },
     {
       "node_id": "end_1",
       "type": "end",
       "label": "End"
+    },
+    {
+      "node_id": "save_run_start",
+      "type": "skill",
+      "label": "Checkpoint: run started",
+      "description": "Registers this execution in data/logs/ before any hardware moves, so a run that fails early is still visible to the tracker instead of leaving nothing behind. Its outgoing edge is deliberately 'default', not 'on_success': a checkpoint is bookkeeping, and a failure to record progress must never abort a run that is physically fine. The validator flags this as unconditional \u2014 that is the intent.",
+      "skill_id": "save_run_folder",
+      "parameters": {
+        "run_name": {
+          "$input": "run_name"
+        },
+        "checkpoint": "start"
+      }
+    },
+    {
+      "node_id": "save_run_mid",
+      "type": "skill",
+      "label": "Checkpoint: pipetting done",
+      "description": "Refreshes the run folder once all pipetting is complete, before labware handling \u2014 so a failure during plate/reader moves still has every dispensed leg on record. Its outgoing edge is deliberately 'default', not 'on_success': a checkpoint is bookkeeping, and a failure to record progress must never abort a run that is physically fine. The validator flags this as unconditional \u2014 that is the intent.",
+      "skill_id": "save_run_folder",
+      "parameters": {
+        "run_name": {
+          "$input": "run_name"
+        },
+        "checkpoint": "mid"
+      }
     }
   ],
   "edges": [
     {
-      "edge_id": "e_start_0_grab_pipette",
+      "edge_id": "e_start_0_save_run_start",
       "from_node": "start_0",
-      "to_node": "grab_pipette",
+      "to_node": "save_run_start",
       "condition": {
         "type": "default"
       }
@@ -2174,9 +2201,9 @@
       }
     },
     {
-      "edge_id": "e_dose8_nitrocefin_eject_place_pipette",
+      "edge_id": "e_dose8_nitrocefin_eject_save_run_mid",
       "from_node": "dose8_nitrocefin_eject",
-      "to_node": "place_pipette",
+      "to_node": "save_run_mid",
       "condition": {
         "type": "on_success"
       }
@@ -2259,6 +2286,22 @@
       "to_node": "end_1",
       "condition": {
         "type": "on_success"
+      }
+    },
+    {
+      "edge_id": "e_save_run_start_grab_pipette",
+      "from_node": "save_run_start",
+      "to_node": "grab_pipette",
+      "condition": {
+        "type": "default"
+      }
+    },
+    {
+      "edge_id": "e_save_run_mid_place_pipette",
+      "from_node": "save_run_mid",
+      "to_node": "place_pipette",
+      "condition": {
+        "type": "default"
       }
     }
   ],

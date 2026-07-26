@@ -60,7 +60,17 @@ def _run(*args: str) -> dict | list | None:
         return None
 
 
-ASSAY_TYPES = ("kinetics", "cfps_expression", "inhibitor_dose_response")
+ASSAY_TYPES = (
+    "kinetics",
+    "cfps_expression",
+    "inhibitor_dose_response",
+    # A run that reached hardware without coming through Plan — started straight
+    # from the Zeon app, or recovered after the fact from an app log export. It
+    # gets a round bead like anything else, because the alternative is a physical
+    # run that the audit trail cannot see. Distinguishable by label, so it never
+    # gets mistaken for a planned experiment.
+    "unplanned",
+)
 
 
 def create_round(assay_type: str, objective: str = "", compound_id: str | None = None) -> Round:
@@ -121,6 +131,58 @@ def link_execution(round_id: str, kind: str, execution_id: str) -> str:
         "--metadata", json.dumps({"execution_id": execution_id}),
     )
     return result["id"]
+
+
+def create_unplanned_round(
+    workflow_id: str,
+    execution_id: str,
+    started_at: str = "",
+    source: str = "app",
+) -> Round:
+    """Round bead for a run that reached hardware without a Plan stage.
+
+    `source` says how we learned about it — "app" for one detected in the project
+    tree, "log_export" for one recovered from a downloaded app log. Both are real
+    physical runs; neither has a planned round to attach to.
+    """
+    title = f"Unplanned run — {workflow_id} ({execution_id[:32]})"
+    args = [
+        "create", title,
+        "--type", "task",
+        "--labels", "assay:unplanned",
+        "--metadata", json.dumps({
+            "workflow_id": workflow_id,
+            "execution_id": execution_id,
+            "started_at": started_at,
+            "provenance_source": source,
+        }),
+    ]
+    round_id = _run(*args)["id"]
+    set_stage(round_id, "planned", reason=f"unplanned run recorded from {source}")
+    return Round(id=round_id, assay_type="unplanned")
+
+
+def record_run_outcome(
+    round_id: str,
+    execution_id: str,
+    complete: bool,
+    last_step: str = "",
+    steps_seen: int = 0,
+    detail: str = "",
+) -> None:
+    """Write what a physical run actually did, finished or not.
+
+    A run that stopped partway is recorded as `deviated` with the step it reached
+    — not left silent. That is the whole point of tracking: a failed run is
+    evidence, and the audit trail should show it happened and where it stopped.
+    """
+    where = f" at {last_step!r}" if last_step else ""
+    summary = (
+        f"execution {execution_id}: {'completed' if complete else 'stopped'}{where}"
+        f" after {steps_seen} step(s)" + (f" — {detail}" if detail else "")
+    )
+    note(round_id, summary)
+    set_stage(round_id, "running" if complete else "deviated", reason=summary)
 
 
 def block_on(blocked_round_id: str, blocker_round_id: str) -> None:
