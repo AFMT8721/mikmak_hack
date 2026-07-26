@@ -36,12 +36,7 @@ const LINE = "#E3E8E3", HAIR = "#EFF2EF", PAPER = "#FCFCFA";
 const ACCENT = "#9D174D", ACCENT_SOFT = "#FBEAF1"; // nitrocefin-red signal
 
 const S: Record<string, React.CSSProperties> = {
-  // height/overflow here are a deliberate deviation from the canvas doc's "don't set your own
-  // scroll container" guidance — confirmed with Zeon as the right call for this workflow's
-  // unusually large (84-input) schema, where the host's own auto-resize wasn't reaching every
-  // row. 100vh caps the canvas to its own iframe viewport so it scrolls internally no matter
-  // what height the host actually grants the iframe.
-  page: { fontFamily: SANS, color: INK, background: PAPER, padding: "34px 26px 46px", maxWidth: 760, margin: "0 auto", fontSize: 14, lineHeight: 1.55, WebkitFontSmoothing: "antialiased", height: "100vh", boxSizing: "border-box", overflowY: "auto" },
+  page: { fontFamily: SANS, color: INK, background: PAPER, padding: "34px 26px 46px", maxWidth: 760, margin: "0 auto", fontSize: 14, lineHeight: 1.55, WebkitFontSmoothing: "antialiased" },
   eyebrow: { fontFamily: MONO, fontSize: 11, fontWeight: 600, letterSpacing: 1.6, textTransform: "uppercase", color: MUTE, margin: "0 0 12px", display: "flex", alignItems: "center", gap: 8 },
   h1: { fontFamily: SANS, fontSize: 27, fontWeight: 800, letterSpacing: -0.7, lineHeight: 1.05, margin: "0 0 10px", color: INK },
   sub: { fontSize: 13.5, color: MUTE, margin: "0 0 4px", lineHeight: 1.6, maxWidth: "68ch" },

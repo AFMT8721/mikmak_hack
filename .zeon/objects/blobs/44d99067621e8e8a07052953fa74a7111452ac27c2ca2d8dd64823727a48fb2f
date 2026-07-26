@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(npx --yes esbuild canvas/cfps_inhibitor_dose_response_screen.tsx --bundle=false --format=esm)",
+      "Bash(echo \"exit:$?\")",
+      "Read(//tmp/**)",
+      "Bash(git -C /Users/kevin/mikmak_hack diff -- canvas/cfps_inhibitor_dose_response_screen.tsx)"
+    ]
+  }
+}
