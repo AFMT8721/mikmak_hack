@@ -132,8 +132,19 @@ const S: Record<string, React.CSSProperties> = {
   catRow: { display: "flex", flexWrap: "wrap", gap: 6, flexBasis: "100%", marginBottom: 2 },
 };
 
-const strDefault = (k: string, fb: string) => (typeof zeon.defaults?.[k] === "string" ? (zeon.defaults[k] as string) : fb);
-const numDefault = (k: string, fb: number) => (typeof zeon.defaults?.[k] === "number" ? (zeon.defaults[k] as number) : fb);
+// `zeon.defaults` holds *staged* values — a sessionStorage draft, or a live
+// (running/paused) run's saved inputs, replayed on every mount. The workflow's
+// own declared values live in `schema[].defaultValue`. Reading only the former
+// meant a synced workflow could never populate this form; the declared value
+// wins, and staged fills anything the workflow leaves undeclared.
+const plannedValue = (k: string): unknown => zeon.schema?.find((s) => s.name === k)?.defaultValue;
+const rawDefault = (k: string): unknown => {
+  const p = plannedValue(k);
+  if (p !== undefined && p !== null && p !== "") return p;
+  return zeon.defaults?.[k];
+};
+const strDefault = (k: string, fb: string) => (typeof rawDefault(k) === "string" && rawDefault(k) !== "" ? (rawDefault(k) as string) : fb);
+const numDefault = (k: string, fb: number) => (typeof rawDefault(k) === "number" ? (rawDefault(k) as number) : fb);
 
 // Collapsible "more info" disclosure — native <details> so it needs no state and
 // stays accessible. `tag` is an optional pill on the right of the summary line.

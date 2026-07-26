@@ -57,12 +57,12 @@
   ".beads/interactions.jsonl": {
     "blob_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "mode": "blob",
-    "mtime": 1785029324.060891
+    "mtime": 1785034471.526456
   },
   ".beads/issues.jsonl": {
     "blob_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "mode": "blob",
-    "mtime": 1785032497.319661
+    "mtime": 1785034719.620908
   },
   ".beads/metadata.json": {
     "blob_sha": "13279243fb5cac3cab0bb5a40e8df4032108a483a9b2be0620ee0e0f4eb717a3",
@@ -77,7 +77,7 @@
   ".claude/settings.local.json": {
     "blob_sha": "2e61e70eb4bc52d00c709f80f9c984f368cff5c7672f76d2481fc02a1668566e",
     "mode": "blob",
-    "mtime": 1785018768.8683858
+    "mtime": 1785035619.067125
   },
   ".codex/config.toml": {
     "blob_sha": "d37497c3278121598a663564ab38b53f658969717f78decb661ddd11c66551ea",
@@ -92,7 +92,7 @@
   ".gitignore": {
     "blob_sha": "3b76b2f372cdce7d74433969482620f1363b666ea1844644636049346751598c",
     "mode": "blob",
-    "mtime": 1785019960.1255054
+    "mtime": 1785033792.5319564
   },
   ".python-version": {
     "blob_sha": "49a506dd32096b010d75205acf3430c9ae6c40351888129499e5a5e487126c93",
@@ -107,7 +107,7 @@
   "CLAUDE.md": {
     "blob_sha": "82850e59234f374b6953ee23818f949c96fd62da04cdacfa6e22e7173da442aa",
     "mode": "blob",
-    "mtime": 1785029296.00762
+    "mtime": 1785033411.74191
   },
   "LICENSE": {
     "blob_sha": "e72a2fc5965ac3c215d118bce84a58b3fea84625177937c6315930cf1f490d38",
@@ -125,24 +125,24 @@
     "mtime": 1785010558.161134
   },
   "canvas/cfps_inhibitor_dose_response_screen.tsx": {
-    "blob_sha": "db71b01a31427c4237f7a0f7ecff6431c97428e17eeb8fa9256507621d5a333b",
+    "blob_sha": "9b5caa608fc73974f758ab46f4aae787fe8b877583f0bf4a65efbbf91d21e9a6",
     "mode": "blob",
-    "mtime": 1785028102.6915746
+    "mtime": 1785036590.4178157
   },
   "canvas/cfps_mastermix_screen.tsx": {
-    "blob_sha": "86308761f2ce0f98ba5af5042cafd9d7c16f20864799f7426f1d95bfbd8eca19",
+    "blob_sha": "99aa164271766cbe5502a4677ac24b26aa9049b7efa3483b14705616ca331d1f",
     "mode": "blob",
-    "mtime": 1785008454.9307995
+    "mtime": 1785036610.9060032
   },
   "canvas/pipette_demo_screen.tsx": {
-    "blob_sha": "b606b97df576e10b4a3383dcbcb51f0d18b63166aa8adbbab0ebd47a4ac6f3d2",
+    "blob_sha": "81ea73ce99149e6e73c7c65eda6cc36ac3df906684cf6f135cbef82601e4eee8",
     "mode": "blob",
-    "mtime": 1785010558.1616302
+    "mtime": 1785036637.4781992
   },
   "canvas/tem1_kinetics_characterization_screen.tsx": {
-    "blob_sha": "70179a09fe101e8dcf6de7221d5f41f42831cea9e76acbe1257c7ffde56a9b14",
+    "blob_sha": "e76174052c02e5694877f31392b1c5d8d3fcbb364ee72402293169f797d955ef",
     "mode": "blob",
-    "mtime": 1785028102.691727
+    "mtime": 1785037113.9397998
   },
   "data/logs/exec_tem1_kinetics_characterization_hack_world_22_20260726_012119/tem1_kinetics_run_20260726_015530/logs/run_log.jsonl": {
     "blob_sha": "8615672547e8ea2ad5bf596c5f8b94542f95fd0d4c9e60bc0d0b3c542ab27eb3",
@@ -163,6 +163,11 @@
     "blob_sha": "75e31c79a1b34a2ac024bf4275860329efde6a67b3e2fd4b0c2ed313154a5981",
     "mode": "blob",
     "mtime": 1785033181.5280225
+  },
+  "inputs/mikmak-06n.json": {
+    "blob_sha": "3c6f2907bfb15dccd67c00040b53cf36535f423a613316ec26bd4e556bc3d56f",
+    "mode": "blob",
+    "mtime": 1785034590.7899053
   },
   "inputs/mikmak-mae.json": {
     "blob_sha": "acdbed7e803546a13d264f7e3fe692fddaa4b2da2ba0f39220f9960139f120ed",
@@ -497,7 +502,7 @@
   "pipeline/agents/plan_agent.py": {
     "blob_sha": "fb9cd135ddc839c47dd3449c403dc84959fce122e2099a1d41e1f7edaa28a1d8",
     "mode": "blob",
-    "mtime": 1785029088.137785
+    "mtime": 1785034364.910619
   },
   "pipeline/apps/approve.py": {
     "blob_sha": "b710349fb3a7d6d8c314f18a8871091ba2e392dee836fd6c7e8b14360f854cb4",
@@ -532,12 +537,12 @@
   "project.json": {
     "blob_sha": "24696a59d78acd37fa1ab65f1753d012be128d5546a5d1d3bfe2f2bcb7b3381c",
     "mode": "blob",
-    "mtime": 1785032499.5764537
+    "mtime": 1785034636.7091439
   },
   "pyproject.toml": {
     "blob_sha": "a9d4a1473e9adadd20c0abc04b233cc3af5089091e4d40f798eb9c30a8f0ec97",
     "mode": "blob",
-    "mtime": 1785021639.406104
+    "mtime": 1785034253.4167216
   },
   "skills/.gitkeep": {
     "blob_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -1127,7 +1132,7 @@
   "uv.lock": {
     "blob_sha": "ff1cb2eefe77db49b17c3f0a13f39ca1df66488e5ac6805275f07b8ddab49fef",
     "mode": "blob",
-    "mtime": 1785021639.4196703
+    "mtime": 1785034253.4285858
   },
   "workflows/.gitkeep": {
     "blob_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -1155,9 +1160,9 @@
     "mtime": 1785010558.178612
   },
   "workflows/tem1_kinetics_characterization.json": {
-    "blob_sha": "a5438969b1d4db02d3ed10fdc5df275ccd00aa12099bce6ecffe245e6448503b",
+    "blob_sha": "b8f2100eb834c05e4bc1d93211d1fd9cc5020793e5cc33dabadee95c212d328f",
     "mode": "blob",
-    "mtime": 1785032496.6118782
+    "mtime": 1785037079.8602095
   },
   "worlds/.DS_Store": {
     "blob_sha": "a62a99bbe0a067d931baa7cd3f0a2aa1ccc2a3eccc4577e396ba06e68991bd83",

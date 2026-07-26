@@ -26,11 +26,16 @@
 import React, { useMemo, useState } from "react";
 
 declare const zeon: {
-  schema: { name: string; type: string; description?: string; defaultValue?: unknown; is_array?: boolean }[];
+  schema: { name: string; type: string; description?: string; defaultValue?: unknown; isArray?: boolean }[];
   worldObjects: { uuid: string; name: string; displayName?: string; meshType?: string }[];
+  // NOT the workflow's declared defaults — these are previously *staged* values:
+  // a sessionStorage draft, or the saved inputs of a live (running/paused) run.
+  // Empty on a clean open. The pipeline's planned numbers arrive via
+  // `schema[].defaultValue` instead, which is why both are consulted below.
   defaults: Record<string, unknown>;
   submit: (values: Record<string, unknown>) => void;
   onValidationErrors: (cb: (errs: { path: string; message: string }[]) => void) => void;
+  resetInputs?: () => void;
 };
 
 const ROWS = ["A", "B", "C", "D", "E", "F", "G", "H"];
@@ -69,19 +74,80 @@ const S: Record<string, React.CSSProperties> = {
   numInput: { width: 72, boxSizing: "border-box", padding: "5px 7px", fontFamily: MONO, fontSize: 12.5, border: `1px solid ${LINE}`, borderRadius: 5, background: "#fff", color: INK },
   textInput: { width: 68, boxSizing: "border-box", padding: "5px 7px", fontFamily: MONO, fontSize: 12.5, border: `1px solid ${LINE}`, borderRadius: 5, background: "#fff", color: INK },
   errorBox: { background: "#FBEEEB", border: "1px solid #E7C1B9", borderRadius: 8, padding: "11px 13px", marginTop: 14, fontSize: 13, color: "#8E2C1E", lineHeight: 1.5 },
+  staleBox: { background: "#FDF6E3", border: "1px solid #E5D5A8", borderRadius: 8, padding: "11px 13px", marginTop: 12, fontSize: 12.5, color: "#6B5518", lineHeight: 1.5 },
   button: { width: "100%", marginTop: 24, padding: "14px 16px", fontFamily: SANS, fontSize: 14.5, fontWeight: 700, letterSpacing: 0.2, color: "#fff", background: ACCENT, border: "none", borderRadius: 8, cursor: "pointer" },
   smallBtn: { fontFamily: MONO, fontSize: 10.5, fontWeight: 700, color: ACCENT, background: "#fff", border: `1px solid ${LINE}`, borderRadius: 5, padding: "4px 9px", cursor: "pointer", textTransform: "uppercase", letterSpacing: 0.4 },
 };
 
 const objName = (o: { name?: string; displayName?: string; uuid: string }) => o.displayName || o.name || o.uuid;
-const strDefault = (k: string, fb: string) => (typeof zeon.defaults?.[k] === "string" ? (zeon.defaults[k] as string) : fb);
-const numDefault = (k: string, fb: number) => (typeof zeon.defaults?.[k] === "number" ? (zeon.defaults[k] as number) : fb);
+
+// Prefer the host's `defaults` map, then fall back to the input's own
+// `defaultValue` in the schema. Those are the same value whenever the host
+// populates `defaults` from the workflow — but a Plan-generated round bakes its
+// numbers into `defaultValue`, so reading only `defaults` would show a blank
+// form for a fully-planned round.
+const plannedValue = (k: string): unknown => zeon.schema?.find((s) => s.name === k)?.defaultValue;
+const stagedValue = (k: string): unknown => zeon.defaults?.[k];
+
+// PLANNED WINS. `zeon.defaults` is staged state — an autosaved sessionStorage
+// draft, or a live run's saved inputs — and the host replays it on every mount.
+// `schema[].defaultValue` is what the pipeline bakes when it syncs a planned
+// round. Reading staged-first meant a synced round could never appear without a
+// manual click, and an old draft silently ran as if it were the new plan. So the
+// declared workflow value wins, and staged only fills inputs the workflow leaves
+// undeclared. `Restore staged values` puts the draft back when that's wanted.
+const rawDefault = (k: string): unknown => {
+  const p = plannedValue(k);
+  if (p !== undefined && p !== null && p !== "") return p;
+  return stagedValue(k);
+};
+// True when a staged draft / live-run value is masking what the workflow declares
+// — i.e. the form is showing something other than the planned round.
+const isStale = (k: string): boolean => {
+  const d = zeon.defaults?.[k];
+  if (d === undefined || d === null || d === "") return false;
+  const p = plannedValue(k);
+  return p !== undefined && p !== null && p !== "" && d !== p;
+};
+const strDefault = (k: string, fb: string) => (typeof rawDefault(k) === "string" && rawDefault(k) !== "" ? (rawDefault(k) as string) : fb);
+const numDefault = (k: string, fb: number) => (typeof rawDefault(k) === "number" ? (rawDefault(k) as number) : fb);
 
 type GridRow = { well: string; enzymeVol: number; substrateVol: number; bufferVol: number };
 type BlankRow = { well: string; vol: number; bufferVol: number };
 
-const emptyGridRow = (): GridRow => ({ well: "", enzymeVol: 0, substrateVol: 0, bufferVol: 0 });
-const emptyBlankRow = (): BlankRow => ({ well: "", vol: 0, bufferVol: 0 });
+// Seeded from the workflow's own input defaults, so a round the pipeline has
+// already planned and synced opens filled in rather than blank. Falls back to
+// empty/zero for an unplanned workflow, which is what a human filling this in by
+// hand starts from.
+// `source` picks which side of the precedence to read: "auto" is the mount-time
+// rule above (planned wins), "planned" and "staged" force one side, for the two
+// buttons that let the operator swap between them explicitly.
+type Source = "auto" | "planned" | "staged";
+const pickBy = (source: Source) => {
+  const get = source === "planned" ? plannedValue : source === "staged" ? stagedValue : rawDefault;
+  return {
+    s: (k: string, fb: string) => (typeof get(k) === "string" && get(k) !== "" ? (get(k) as string) : fb),
+    n: (k: string, fb: number) => (typeof get(k) === "number" ? (get(k) as number) : fb),
+  };
+};
+
+const gridRowFromDefaults = (p: string, source: Source = "auto"): GridRow => {
+  const { s, n } = pickBy(source);
+  return {
+    well: s(`pt_${p}_well`, ""),
+    enzymeVol: n(`pt_${p}_enzyme_vol_ul`, 0),
+    substrateVol: n(`pt_${p}_substrate_vol_ul`, 0),
+    bufferVol: n(`pt_${p}_buffer_vol_ul`, 0),
+  };
+};
+const blankRowFromDefaults = (name: "blank_e" | "blank_s", source: Source = "auto"): BlankRow => {
+  const { s, n } = pickBy(source);
+  return {
+    well: s(`${name}_well`, ""),
+    vol: n(`${name}_vol_ul`, 0),
+    bufferVol: n(`${name}_buffer_vol_ul`, 0),
+  };
+};
 
 // Mirrors pipeline/agents/plan_agent.py's plan_kinetics_round tip assignment exactly:
 // 3 tips per grid point in fixed order, then 2 tips for blank_e, then 2 for blank_s.
@@ -129,13 +195,44 @@ export default function Tem1KineticsCharacterizationScreen() {
   const [runName, setRunName] = useState(strDefault("run_name", "tem1_kinetics_run"));
 
   const [grid, setGrid] = useState<Record<string, GridRow>>(() =>
-    Object.fromEntries(GRID_POSITIONS.map((p) => [p, emptyGridRow()])) as Record<string, GridRow>
+    Object.fromEntries(GRID_POSITIONS.map((p) => [p, gridRowFromDefaults(p)])) as Record<string, GridRow>
   );
-  const [blankE, setBlankE] = useState<BlankRow>(emptyBlankRow());
-  const [blankS, setBlankS] = useState<BlankRow>(emptyBlankRow());
+  const [blankE, setBlankE] = useState<BlankRow>(() => blankRowFromDefaults("blank_e"));
+  const [blankS, setBlankS] = useState<BlankRow>(() => blankRowFromDefaults("blank_s"));
 
   const updateGrid = (p: string, patch: Partial<GridRow>) =>
-    setGrid((g) => ({ ...g, [p]: { ...g[p], ...patch } }));
+    setGrid((g: Record<string, GridRow>) => ({ ...g, [p]: { ...g[p], ...patch } }));
+
+  // Any per-well field where a staged draft (or a live run's saved inputs) is
+  // showing something other than what the workflow declares. Worth surfacing:
+  // the form silently replaying an old plate is indistinguishable from a fresh
+  // one, and the two produce different chemistry.
+  const stagedKeys = useMemo(() => {
+    const keys: string[] = [];
+    GRID_POSITIONS.forEach((p) => {
+      ["well", "enzyme_vol_ul", "substrate_vol_ul", "buffer_vol_ul"].forEach((f) => {
+        if (isStale(`pt_${p}_${f}`)) keys.push(`pt_${p}_${f}`);
+      });
+    });
+    (["blank_e", "blank_s"] as const).forEach((b) => {
+      ["well", "vol_ul", "buffer_vol_ul"].forEach((f) => {
+        if (isStale(`${b}_${f}`)) keys.push(`${b}_${f}`);
+      });
+    });
+    return keys;
+  }, []);
+
+  const loadFrom = (source: Source) => {
+    const { s, n } = pickBy(source);
+    setGrid(Object.fromEntries(GRID_POSITIONS.map((p) => [p, gridRowFromDefaults(p, source)])) as Record<string, GridRow>);
+    setBlankE(blankRowFromDefaults("blank_e", source));
+    setBlankS(blankRowFromDefaults("blank_s", source));
+    setEnzymeHole(s("enzyme_hole", "hole_1"));
+    setSubstrateHole(s("substrate_hole", "hole_2"));
+    setBufferHole(s("buffer_hole", "hole_3"));
+    setRunName(s("run_name", "tem1_kinetics_run"));
+    setTotalWellVolume(n("total_well_volume_ul", 20.0));
+  };
 
   const autoFillWells = () => {
     const order = [...WELL_ORDER];
@@ -225,6 +322,12 @@ export default function Tem1KineticsCharacterizationScreen() {
         nitrocefin working concentration and endpoint timing used by the CFPS inhibitor
         dose-response screen — run it first if that hasn't happened yet.
       </p>
+      <div style={S.staleBox}>
+        <strong>The run stops after the reader lid closes.</strong> The arm builds the plate, loads
+        it into the reader and closes the lid — then ends. Start the kinetic read in Gen5 yourself
+        and retrieve the plate afterwards; automated kinetic reads aren't available yet. The plate
+        is <em>not</em> returned home, so clear the reader before the next run.
+      </div>
       <hr style={S.rule} />
 
       <h2 style={S.h2}><span>Deck</span></h2>
@@ -272,8 +375,22 @@ export default function Tem1KineticsCharacterizationScreen() {
 
       <h2 style={S.h2}>
         <span>Enzyme x substrate grid</span>
-        <button type="button" style={S.smallBtn} onClick={autoFillWells}>Auto-fill wells (A1, A2, ...)</button>
+        <span style={{ display: "flex", gap: 8 }}>
+          <button type="button" style={S.smallBtn} onClick={() => loadFrom("planned")}>Load planned values</button>
+          <button type="button" style={S.smallBtn} onClick={autoFillWells}>Auto-fill wells (A1, A2, ...)</button>
+        </span>
       </h2>
+      {stagedKeys.length > 0 && (
+        <div style={S.staleBox}>
+          <strong>Showing the planned round, not your staged draft.</strong> {stagedKeys.length} field
+          {stagedKeys.length === 1 ? " differs" : "s differ"} between them. Staged values come from an
+          autosaved draft or a still-live run and are replayed on every open, so the synced round takes
+          precedence here.{" "}
+          <button type="button" style={{ ...S.smallBtn, marginLeft: 4 }} onClick={() => loadFrom("staged")}>
+            Restore staged values
+          </button>
+        </div>
+      )}
       <p style={S.sub}>
         Each row's three volumes should sum to the total well volume above — the workflow itself
         doesn't enforce this, so mismatches are flagged here only as a hint, not blocked.

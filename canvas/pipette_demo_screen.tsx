@@ -45,10 +45,21 @@ const S: Record<string, React.CSSProperties> = {
   button: { width: "100%", marginTop: 24, padding: "11px 16px", fontSize: 15, fontWeight: 600, color: "#fff", background: "#0e7490", border: "none", borderRadius: 8, cursor: "pointer" },
 };
 
+/** The value an input should open with. `zeon.defaults` is *staged* state — a
+ *  sessionStorage draft or a live run's saved inputs, replayed on every mount —
+ *  while the workflow's own declared value lives in `schema[].defaultValue`.
+ *  The declared value wins so a synced workflow actually shows up; staged fills
+ *  anything the workflow leaves undeclared. */
+function inputDefault(inputName: string): unknown {
+  const planned = zeon.schema?.find((s) => s.name === inputName)?.defaultValue;
+  if (planned !== undefined && planned !== null && planned !== "") return planned;
+  return zeon.defaults?.[inputName];
+}
+
 /** Pick the initial value for an object role: the workflow default when it is
  *  actually in this world, else the first candidate, else "". */
 function initialObject(inputName: string, candidates: WorldObject[]): string {
-  const d = zeon.defaults?.[inputName];
+  const d = inputDefault(inputName);
   if (typeof d === "string" && candidates.some((c) => objName(c) === d)) return d;
   return candidates[0] ? objName(candidates[0]) : "";
 }
@@ -98,7 +109,7 @@ export default function PipetteDemoScreen() {
   const [pipette, setPipette] = useState(() => initialObject("pipette", pipettes));
   const [tipbox, setTipbox] = useState(() => initialObject("tipbox", tipboxes));
   const [tipIndex, setTipIndex] = useState<number>(() => {
-    const d = zeon.defaults?.tip_index;
+    const d = inputDefault("tip_index");
     return typeof d === "number" ? d : 0;
   });
   const [sourcePlate, setSourcePlate] = useState(() => initialObject("source_plate", plates));
@@ -108,7 +119,7 @@ export default function PipetteDemoScreen() {
   const [destRow, setDestRow] = useState("A");
   const [destCol, setDestCol] = useState(1);
   const [volume, setVolume] = useState<number>(() => {
-    const d = zeon.defaults?.volume;
+    const d = inputDefault("volume");
     return typeof d === "number" ? d : 5;
   });
   const [errors, setErrors] = useState<string[]>([]);

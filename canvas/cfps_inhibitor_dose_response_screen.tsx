@@ -17,11 +17,17 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 declare const zeon: {
-  schema: { name: string; type: string; description?: string; defaultValue?: unknown; is_array?: boolean }[];
+  schema: { name: string; type: string; description?: string; defaultValue?: unknown; isArray?: boolean }[];
   worldObjects: { uuid: string; name: string; displayName?: string; meshType?: string }[];
+  // NOT the workflow's declared defaults — these are previously *staged* values:
+  // a sessionStorage draft, or the saved inputs of a live (running/paused) run,
+  // replayed on every mount. The pipeline's planned round arrives via
+  // `schema[].defaultValue` instead, so both are consulted below and the planned
+  // round wins.
   defaults: Record<string, unknown>;
   submit: (values: Record<string, unknown>) => void;
   onValidationErrors: (cb: (errs: { path: string; message: string }[]) => void) => void;
+  resetInputs?: () => void;
 };
 
 const ROWS = ["A", "B", "C", "D", "E", "F", "G", "H"];
@@ -46,7 +52,9 @@ const S: Record<string, React.CSSProperties> = {
   h1: { fontFamily: SANS, fontSize: 27, fontWeight: 800, letterSpacing: -0.7, lineHeight: 1.05, margin: "0 0 10px", color: INK },
   sub: { fontSize: 13.5, color: MUTE, margin: "0 0 4px", lineHeight: 1.6, maxWidth: "68ch" },
   rule: { height: 1, background: LINE, border: 0, margin: "22px 0 2px" },
-  h2: { fontFamily: MONO, fontSize: 11, fontWeight: 700, margin: "36px 0 12px", paddingTop: 18, color: INK, textTransform: "uppercase", letterSpacing: 1.3, borderTop: `1px solid ${LINE}` },
+  h2: { fontFamily: MONO, fontSize: 11, fontWeight: 700, margin: "36px 0 12px", paddingTop: 18, color: INK, textTransform: "uppercase", letterSpacing: 1.3, borderTop: `1px solid ${LINE}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 },
+  smallBtn: { fontFamily: MONO, fontSize: 10.5, fontWeight: 700, color: ACCENT, background: "#fff", border: `1px solid ${LINE}`, borderRadius: 5, padding: "4px 9px", cursor: "pointer", textTransform: "uppercase", letterSpacing: 0.4, whiteSpace: "nowrap" },
+  staleBox: { background: "#FDF6E3", border: "1px solid #E5D5A8", borderRadius: 8, padding: "11px 13px", marginTop: 12, fontSize: 12.5, color: "#6B5518", lineHeight: 1.5 },
   grid2: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px" },
   label: { display: "block", fontFamily: MONO, fontSize: 10.5, fontWeight: 600, margin: "12px 0 5px", color: MUTE, textTransform: "uppercase", letterSpacing: 0.6 },
   field: { width: "100%", boxSizing: "border-box", padding: "9px 11px", fontFamily: SANS, fontSize: 13.5, border: `1px solid ${LINE}`, borderRadius: 7, background: "#fff", color: INK, outline: "none" },
@@ -65,9 +73,45 @@ const S: Record<string, React.CSSProperties> = {
 };
 
 const objName = (o: { name?: string; displayName?: string; uuid: string }) => o.displayName || o.name || o.uuid;
-const strDefault = (k: string, fb: string) => (typeof zeon.defaults?.[k] === "string" ? (zeon.defaults[k] as string) : fb);
+
+const plannedValue = (k: string): unknown => zeon.schema?.find((s) => s.name === k)?.defaultValue;
+const stagedValue = (k: string): unknown => zeon.defaults?.[k];
+// Planned wins — see the note on `defaults` above.
+const rawDefault = (k: string): unknown => {
+  const p = plannedValue(k);
+  if (p !== undefined && p !== null && p !== "") return p;
+  return stagedValue(k);
+};
+type Source = "auto" | "planned" | "staged";
+const pickBy = (source: Source) => {
+  const get = source === "planned" ? plannedValue : source === "staged" ? stagedValue : rawDefault;
+  return {
+    s: (k: string, fb: string) => (typeof get(k) === "string" && get(k) !== "" ? (get(k) as string) : fb),
+    n: (k: string, fb: number) => (typeof get(k) === "number" ? (get(k) as number) : fb),
+  };
+};
+const strDefault = (k: string, fb: string) => pickBy("auto").s(k, fb);
 
 type DosePos = { well: string; compoundSrcWell: string; compoundVol: number; nitrocefinVol: number };
+
+// A planned round declares dose_n positions; without this the table opened empty
+// and every well and volume had to be re-entered by hand.
+const dosesFrom = (source: Source): DosePos[] => {
+  const { s, n } = pickBy(source);
+  const count = Math.min(n("dose_n", 0), MAX_DOSES);
+  const out: DosePos[] = [];
+  for (let i = 1; i <= count; i++) {
+    const well = s(`dose${i}_well`, "");
+    if (!well) continue;
+    out.push({
+      well,
+      compoundSrcWell: s(`dose${i}_compound_src_well`, ""),
+      compoundVol: n(`dose${i}_compound_vol_ul`, 0),
+      nitrocefinVol: n(`dose${i}_nitrocefin_vol_ul`, 0),
+    });
+  }
+  return out;
+};
 
 export default function CfpsInhibitorDoseResponseScreen() {
   const pick = (match: (m: string) => boolean, dfltKey: string, fallback: string) => {
@@ -98,8 +142,23 @@ export default function CfpsInhibitorDoseResponseScreen() {
   const [compoundId, setCompoundId] = useState(strDefault("compound_id", ""));
   const [runName, setRunName] = useState(strDefault("run_name", "cfps_inhibitor_dose_response_run"));
 
-  // Ordered list of dose positions — click a well on the plate map to append/remove it.
-  const [doses, setDoses] = useState<DosePos[]>([]);
+  // Ordered list of dose positions — seeded from the planned round if one has been
+  // synced, otherwise empty for a human to build by clicking the plate map.
+  const [doses, setDoses] = useState<DosePos[]>(() => dosesFrom("auto"));
+
+  const stagedDiffers = useMemo(() => {
+    const planned = dosesFrom("planned");
+    const staged = dosesFrom("staged");
+    if (!staged.length) return false;
+    return JSON.stringify(planned) !== JSON.stringify(staged);
+  }, []);
+  const loadFrom = (source: Source) => {
+    const { s } = pickBy(source);
+    setDoses(dosesFrom(source));
+    setNitrocefinHole(s("nitrocefin_hole", "hole_9"));
+    setCompoundId(s("compound_id", ""));
+    setRunName(s("run_name", "cfps_inhibitor_dose_response_run"));
+  };
 
   const toggleWell = (w: string) =>
     setDoses((ds) => {
@@ -209,8 +268,21 @@ export default function CfpsInhibitorDoseResponseScreen() {
         </div>
       </div>
 
-      <h2 style={S.h2}>Wells to dose — click up to {MAX_DOSES} on the reaction plate</h2>
+      <h2 style={S.h2}>
+        <span>Wells to dose — click up to {MAX_DOSES} on the reaction plate</span>
+        <button type="button" style={S.smallBtn} onClick={() => loadFrom("planned")}>Load planned values</button>
+      </h2>
       <p style={S.sub}>Only click wells that already hold expressed TEM1 reaction mix from Part 1.</p>
+      {stagedDiffers && (
+        <div style={S.staleBox}>
+          <strong>Showing the planned round, not your staged draft.</strong> Staged values come from an
+          autosaved draft or a still-live run and are replayed on every open, so the synced round takes
+          precedence here.{" "}
+          <button type="button" style={{ ...S.smallBtn, marginLeft: 4 }} onClick={() => loadFrom("staged")}>
+            Restore staged values
+          </button>
+        </div>
+      )}
       <div style={S.plate}>
         <div />
         {COLS.map((c) => <div key={c} style={S.hdr}>{c}</div>)}
