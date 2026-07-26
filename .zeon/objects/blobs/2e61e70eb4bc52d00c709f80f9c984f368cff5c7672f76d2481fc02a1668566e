@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(npx --yes esbuild canvas/cfps_inhibitor_dose_response_screen.tsx --bundle=false --format=esm)",
+      "Bash(echo \"exit:$?\")",
+      "Read(//tmp/**)",
+      "Bash(git -C /Users/kevin/mikmak_hack diff -- canvas/cfps_inhibitor_dose_response_screen.tsx)",
+      "Bash(npx --yes esbuild canvas/tem1_kinetics_characterization_screen.tsx --bundle=false --format=esm > /dev/null 2>/tmp/esbuild_err3.txt; echo \"exit:$?\"; cat /tmp/esbuild_err3.txt)",
+      "Bash(python3 -c \"import json; json.load\\(open\\('/Users/kevin/mikmak_hack/workflows/tem1_kinetics_characterization.json'\\)\\); print\\('valid JSON'\\)\")"
+    ],
+    "additionalDirectories": [
+      "/tmp"
+    ]
+  }
+}
