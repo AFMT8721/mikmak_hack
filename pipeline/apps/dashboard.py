@@ -526,10 +526,146 @@ def _(RESULTS_DIR, json, mo, round_id):
 
 @app.cell
 def _(CSS, mo, results, round_id):
-    _assay = ("inhibitor" if "fit" in results and "doses_ul" in results
+    def _inhibitor_curve_html(results):
+        # FORM: line (fitted 4PL model) + dot (observed response) on one log-dose
+        # axis — one compound per round, so one series: no legend needed, identity
+        # is named in the title above the chart instead. IC50 is a reference line,
+        # not data, so it stays in ink/muted tokens rather than a categorical hue.
+        import math
+
+        fit = results.get("fit", {})
+        doses = results["doses_ul"]
+        responses = results["response"]
+        has_fit = "ic50" in fit
+
+        log_doses = [math.log10(d) if d > 0 else math.log10(1e-6) for d in doses]
+        lo, hi = min(log_doses), max(log_doses)
+        pad = (hi - lo) * 0.15 or 0.5
+        lo, hi = lo - pad, hi + pad
+
+        y_vals = list(responses) + ([fit["bottom"], fit["top"]] if has_fit else [])
+        y_lo, y_hi = min(y_vals), max(y_vals)
+        y_pad = (y_hi - y_lo) * 0.15 or 0.05
+        y_lo, y_hi = y_lo - y_pad, y_hi + y_pad
+
+        PAD_L, PAD_R, PAD_T, PAD_B = 52, 16, 26, 34
+        W, H = 600, 250
+        PW, PH = W - PAD_L - PAD_R, H - PAD_T - PAD_B
+
+        def x_of(logd):
+            return PAD_L + (logd - lo) / (hi - lo) * PW
+
+        def y_of(v):
+            return PAD_T + (1 - (v - y_lo) / (y_hi - y_lo)) * PH
+
+        _fracs = (0.0, 0.5, 1.0)
+        grid = "".join(
+            f'<line x1="{PAD_L}" y1="{y_of(y_lo + f * (y_hi - y_lo)):.1f}" '
+            f'x2="{W - PAD_R}" y2="{y_of(y_lo + f * (y_hi - y_lo)):.1f}" '
+            f'stroke="var(--grid)" stroke-width="1"/>'
+            for f in _fracs
+        )
+        y_ticks = "".join(
+            f'<text x="{PAD_L - 6}" y="{y_of(y_lo + f * (y_hi - y_lo)) + 3:.1f}" text-anchor="end" '
+            f'class="mono" font-size="9" fill="var(--muted)">{y_lo + f * (y_hi - y_lo):.3f}</text>'
+            for f in _fracs
+        )
+
+        curve = ""
+        if has_fit:
+            pts = []
+            for k in range(61):
+                logd = lo + (hi - lo) * k / 60
+                d = 10 ** logd
+                v = fit["bottom"] + (fit["top"] - fit["bottom"]) / (1 + (d / fit["ic50"]) ** fit["hill_slope"])
+                pts.append(f"{x_of(logd):.1f},{y_of(v):.1f}")
+            curve = f'<path d="M {" L ".join(pts)}" fill="none" stroke="var(--s1)" stroke-width="2"/>'
+
+        ic50_line = ""
+        if has_fit and lo <= math.log10(fit["ic50"]) <= hi:
+            xi = x_of(math.log10(fit["ic50"]))
+            ic50_line = (
+                f'<line x1="{xi:.1f}" y1="{PAD_T}" x2="{xi:.1f}" y2="{H - PAD_B}" '
+                f'stroke="var(--ink-2)" stroke-width="1.5" stroke-dasharray="4,3"/>'
+                f'<text x="{xi:.1f}" y="{PAD_T - 8}" text-anchor="middle" class="mono" '
+                f'font-size="9.5" fill="var(--ink-2)">IC50 {fit["ic50"]:.3g}</text>'
+            )
+
+        points = "".join(
+            f'<circle cx="{x_of(ld):.1f}" cy="{y_of(r):.1f}" r="5" fill="var(--s1)" '
+            f'stroke="var(--surface-1)" stroke-width="1.5"><title>{d:.3g} µL -&gt; {r:.4f}</title></circle>'
+            for d, r, ld in zip(doses, responses, log_doses)
+        )
+        x_ticks = "".join(
+            f'<text x="{x_of(ld):.1f}" y="{H - PAD_B + 13:.1f}" text-anchor="middle" class="mono" '
+            f'font-size="8" fill="var(--muted)">{d:.2g}</text>'
+            for d, ld in zip(doses, log_doses)
+        )
+
+        svg = f"""
+        <svg viewBox="0 0 {W} {H}" style="width:100%;height:auto;max-width:640px">
+          {grid}
+          <line x1="{PAD_L}" y1="{H - PAD_B}" x2="{W - PAD_R}" y2="{H - PAD_B}" stroke="var(--axis)" stroke-width="1"/>
+          <line x1="{PAD_L}" y1="{PAD_T}" x2="{PAD_L}" y2="{H - PAD_B}" stroke="var(--axis)" stroke-width="1"/>
+          {ic50_line}
+          {curve}
+          {points}
+          {y_ticks}
+          {x_ticks}
+          <text x="{(PAD_L + W - PAD_R) / 2:.1f}" y="{H - 4}" text-anchor="middle" class="mono"
+                font-size="9" fill="var(--muted)">dose (µL, log scale)</text>
+        </svg>
+        """
+
+        rows = "".join(
+            f'<tr><td class="mono">{d:.3g}</td><td class="mono" style="text-align:right">{r:.4f}</td></tr>'
+            for d, r in zip(doses, responses)
+        )
+        table = f"""
+        <details style="margin-top:8px">
+          <summary style="cursor:pointer;font-size:11px;color:var(--ink-2);
+                   font-family:ui-monospace,Menlo,monospace">table view</summary>
+          <table class="t" style="margin-top:6px"><thead><tr><th>Dose (µL)</th>
+          <th style="text-align:right">Response</th></tr></thead>
+          <tbody>{rows}</tbody></table>
+        </details>
+        """
+
+        if has_fit:
+            summary = (
+                f'IC50 &asymp; <b>{fit["ic50"]:.3g}</b> µL-equivalent &middot; Hill <b>{fit["hill_slope"]:.2f}</b> '
+                f'&middot; R&sup2; <b>{fit.get("r_squared", float("nan")):.3f}</b>'
+            )
+        else:
+            summary = fit.get("note", "fit unavailable")
+
+        return f"""
+        <div class="note" style="margin-bottom:6px">{summary} &mdash;
+        <span class="mono">{results.get('compound_id', '')}</span></div>
+        {svg}
+        {table}
+        """
+
+    _assay = ("raw_kinetic_export" if results.get("kind") == "raw_kinetic_export"
+              else "inhibitor" if "fit" in results and "doses_ul" in results
               else "kinetics" if "fits" in results else "cfps_expression")
 
-    if _assay == "kinetics":
+    if _assay == "raw_kinetic_export":
+        _rows = "".join(
+            f'<tr><td class="mono">{w}</td>'
+            f'<td class="mono" style="text-align:right">{v["initial_rate"]:.5f}</td>'
+            f'<td class="mono" style="text-align:right;color:var(--ink-2)">{v["n_timepoints"]}</td></tr>'
+            for w, v in sorted(results["well_rates"].items())
+        )
+        body = f"""
+        <table class="t"><thead><tr><th>Well</th>
+        <th style="text-align:right">Initial rate (A490/min)</th>
+        <th style="text-align:right">Timepoints</th></tr></thead>
+        <tbody>{_rows}</tbody></table>
+        <div class="note">No input preset for this round, so no enzyme/substrate condition is
+        known per well — this is the observed rate straight off the Gen5 kinetic export
+        (execution <span class="mono">{results.get('execution_id')}</span>), not a fit.</div>"""
+    elif _assay == "kinetics":
         _rows = "".join(
             f'<tr><td class="mono">{k}</td>'
             f'<td class="mono" style="text-align:right">{v.get("vmax", float("nan")):.5f}</td>'
@@ -545,20 +681,7 @@ def _(CSS, mo, results, round_id):
         <b>{results.get('recommended_endpoint_minutes')} min</b>
         (best fit <span class="mono">{results.get('best_fit')}</span>).</div>"""
     elif _assay == "inhibitor":
-        _f = results["fit"]
-        _ic = (f"IC50 ≈ <b>{_f['ic50']:.3g}</b> µL-equivalent (Hill {_f['hill_slope']:.2f})"
-               if "ic50" in _f else _f.get("note", ""))
-        _mx = max(results["response"]) or 1
-        _bars = "".join(
-            f'<div title="{d} µL → {r:.4f}" style="flex:1;display:flex;flex-direction:column;'
-            f'justify-content:flex-end;height:110px">'
-            f'<div style="height:{100*r/_mx:.1f}%;background:var(--s1);border-radius:4px 4px 0 0"></div>'
-            f'<div style="font-size:8.5px;color:var(--muted);text-align:center;margin-top:3px"'
-            f' class="mono">{d}</div></div>'
-            for d, r in zip(results["doses_ul"], results["response"])
-        )
-        body = (f'<div style="display:flex;gap:3px;align-items:flex-end">{_bars}</div>'
-                f'<div class="note">{_ic} · dose (µL) on x, response on y.</div>')
+        body = _inhibitor_curve_html(results)
     else:
         _go = results.get("go")
         body = (f'<div style="font-size:22px;font-weight:800;'
@@ -568,11 +691,22 @@ def _(CSS, mo, results, round_id):
                 f'negative <span class="mono">{results.get("neg_mean")}</span> · '
                 f'sample <span class="mono">{results.get("sample_mean")}</span></div>')
 
+    if _assay in ("kinetics", "raw_kinetic_export"):
+        _is_real = True
+    else:
+        _is_real = results.get("data_source") == "real_export"
+    _provenance = (
+        '<div class="note"><b>Real data.</b> Parsed from a Gen5 PDF export '
+        '(<span class="mono">parse_gen5_export</span> in '
+        '<span class="mono">analyze_agent.py</span>).</div>'
+        if _is_real else
+        '<div class="note"><b>Synthetic data.</b> No Gen5 export was found for this execution yet — '
+        '<span class="mono">parse_gen5_export</span>\'s stub fallback filled in realistically shaped '
+        'numbers, not measurements.</div>'
+    )
     mo.Html(CSS + f"""<div class="viz"><div class="card">
       <h3>Analysis — {round_id}</h3>{body}
-      <div class="note"><b>Synthetic data.</b> <span class="mono">parse_gen5_export</span> in
-      <span class="mono">analyze_agent.py</span> is still a stub — these are realistically
-      shaped numbers, not measurements.</div>
+      {_provenance}
     </div></div>""")
     return
 

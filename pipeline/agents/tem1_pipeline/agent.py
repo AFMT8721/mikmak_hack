@@ -25,7 +25,11 @@ from __future__ import annotations
 
 import json
 import os
+import socket
+import subprocess
 import sys
+import time
+import webbrowser
 from pathlib import Path
 
 from google.adk.agents import Agent
@@ -119,7 +123,50 @@ def note_on_round_tool(round_id: str, text: str) -> dict:
     return {"round_id": round_id, "noted": text}
 
 
-SHARED_TOOLS = [list_rounds_tool, round_status_tool]
+DASHBOARD_PATH = PROJECT_ROOT / "pipeline" / "apps" / "dashboard.py"
+DASHBOARD_PORT = int(os.environ.get("PIPELINE_DASHBOARD_PORT", "2718"))
+
+
+def _port_open(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.settimeout(0.5)
+        return s.connect_ex(("127.0.0.1", port)) == 0
+
+
+def open_dashboard_tool() -> dict:
+    """Launch the marimo campaign-provenance dashboard (pipeline/apps/dashboard.py)
+    and open it in the operator's browser.
+
+    Starts it with `marimo run` (the read-only app view, not `marimo edit`) — this
+    is the finished dashboard, not a notebook to poke at. If a dashboard is
+    already listening on the expected port, this just opens that instead of
+    starting a second server. Runs the server as a detached background process —
+    it keeps running after this tool call returns, and after this chat session
+    ends.
+    """
+    url = f"http://127.0.0.1:{DASHBOARD_PORT}"
+    already_running = _port_open(DASHBOARD_PORT)
+    if not already_running:
+        subprocess.Popen(
+            ["marimo", "run", str(DASHBOARD_PATH), "-p", str(DASHBOARD_PORT), "--no-token", "--headless"],
+            cwd=PROJECT_ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+        for _ in range(20):
+            time.sleep(0.5)
+            if _port_open(DASHBOARD_PORT):
+                break
+    opened = webbrowser.open(url)
+    return {
+        "url": url,
+        "already_running": already_running,
+        "opened_in_browser": bool(opened),
+        "note": "give this URL to the operator regardless of opened_in_browser — a headless "
+                "or remote session can't pop a local browser window even though the server is up.",
+    }
+
+
+SHARED_TOOLS = [list_rounds_tool, round_status_tool, open_dashboard_tool]
 
 
 # --- Plan -----------------------------------------------------------------------
@@ -426,10 +473,26 @@ analyst = Agent(
         "'decided'.\n"
         "Report the actual numbers, then say what they imply for the next round: a kinetics fit "
         "sets the substrate level for screening; a no-go means do not spend a screen on that "
-        "plate; an IC50 becomes the center of the next dose series for that compound.\n"
-        "IMPORTANT: parse_gen5_export in analyze_agent.py is still a STUB returning synthetic "
-        "data. Until it parses real Gen5 exports, state in every analysis that the numbers are "
-        "synthetic and not experimental results. Never present them as real measurements.\n"
+        "plate; an IC50 becomes the center of the next dose series for that compound.\n\n"
+        "If analyze_kinetics_round_tool raises because the round has no input preset "
+        "(typically an 'unplanned' round beads created from a physical run that was never "
+        "planned through this chat, or a round stuck at 'deviated' for that reason) do NOT give "
+        "up — call round_status_tool to get its linked execution_id, then call "
+        "analyze_execution_kinetic_export_tool(execution_id, wells) instead. That tool needs no "
+        "preset and reports each well's observed initial rate straight from the Gen5 kinetic PDF "
+        "at data/platereader/<execution_id>/. wells is REQUIRED — ask the operator which wells "
+        "were actually dosed before calling it. A Gen5 export covers the full 96-well plate, and "
+        "most of it is empty-plate background; never pass every well in the export just because "
+        "the data exists for it. It also does not fit Michaelis-Menten (no known enzyme/substrate "
+        "condition per well without a preset) — say so, and ask the operator which wells "
+        "correspond to which conditions if they want that read against a specific layout.\n\n"
+        "Both the kinetic and endpoint Gen5 parser paths in parse_gen5_export are real, and read "
+        "off data/platereader/<execution_id>/*.pdf when a PDF is present there — the endpoint path "
+        "(used by analyze_inhibitor_round_tool and analyze_cfps_expression_round_tool) only falls "
+        "back to a synthetic stub for an execution_id that has no export yet. Always check whether "
+        "results came from a real export or the stub fallback (round_status_tool won't tell you "
+        "this directly — check whether data/platereader/<execution_id>/ has a PDF) and state that "
+        "plainly. Never present stub numbers as real measurements.\n"
         "If a fit does not converge, say so and suggest a wider or better-centered range "
         "rather than reporting a meaningless parameter."
     ),
@@ -437,6 +500,7 @@ analyst = Agent(
         analyze.analyze_kinetics_round_tool,
         analyze.analyze_cfps_expression_round_tool,
         analyze.analyze_inhibitor_round_tool,
+        analyze.analyze_execution_kinetic_export_tool,
         read_results_tool,
         note_on_round_tool,
         *SHARED_TOOLS,
@@ -472,7 +536,10 @@ root_agent = Agent(
         "kinetics round and a 'go' expression round behind it).\n"
         "- Report what the tools returned, including failures and skipped checks. This drives "
         "real hardware and real reagents; an overstated 'all clear' is the expensive kind of "
-        "wrong."
+        "wrong.\n"
+        "- If the operator asks to see, open, or pull up the dashboard, call open_dashboard_tool "
+        "yourself — do not say you lack that capability. It starts pipeline/apps/dashboard.py "
+        "with `marimo run` and opens it in a browser on this machine."
     ),
     sub_agents=[planner, syncer, simulator, executor, analyst],
     tools=[*SHARED_TOOLS, show_round_inputs_tool, note_on_round_tool],

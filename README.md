@@ -80,52 +80,34 @@ can see every round, what stage it's at, and why.
 ```bash
 uv sync                      # installs the Python dependencies
 brew install beads            # the bd command, if not already installed
+cp pipeline/agents/tem1_pipeline/.env.example pipeline/agents/tem1_pipeline/.env  # add GOOGLE_API_KEY
 ```
 
-### Plan the next experiment
+### Talk to the pipeline
+
+The whole Plan → Sync → Simulate → Approve → Execute → Analyze loop is driven
+conversationally, by chatting with a Google ADK agent:
 
 ```bash
-uv run python -c "
-import sys; sys.path.insert(0, 'pipeline')
-from pipeline.agents.plan_agent import plan_and_record_kinetics_round
-plan_and_record_kinetics_round()
-"
+adk web pipeline/agents        # or: adk run pipeline/agents/tem1_pipeline
 ```
 
-(There's an equivalent `plan_and_record_inhibitor_round(...)` for the compound
-screen, once a kinetics round has decided and you know which wells are
-confirmed-expressed.) This prints a round ID like `mikmak-abc123` and writes its
-settings to `inputs/mikmak-abc123.json`.
+Tell it what round to plan, whether to sync/push its values into the Zeon app,
+whether to approve it, and it'll hand you exact run instructions (which
+workflow, which run name, which deck items) once it's ready to go — the CLI has
+no way to start a physical run, so **you press Run yourself, in the Zeon app**.
+Ask it to check on a run, analyze results once they land, or just "pull up the
+dashboard" — it can open that for you directly.
 
-### Check the plan is safe
+Everything the chat does is a thin wrapper over plain functions in `pipeline/`
+(`plan_agent.py`, `simulate.py`, `watch_execution.py`, `analyze_agent.py`,
+`zeon_sync.py`) — you can call those directly instead if you'd rather script it
+than chat, or run the Approve/dashboard apps on their own:
 
 ```bash
-uv run python pipeline/simulate.py mikmak-abc123
+uv run marimo run pipeline/apps/approve.py     # review + approve a planned round
+uv run marimo run pipeline/apps/dashboard.py   # every round, its stage, and its results
 ```
-
-### Approve it
-
-```bash
-uv run marimo run pipeline/apps/approve.py
-```
-
-Open the link it prints, pick your round, review the settings, click **Approve**.
-
-### Run it for real
-
-Open the [Zeon app](https://zeonsystems.app), open the matching workflow (e.g.
-`cfps_inhibitor_dose_response`), and paste in the values from
-`inputs/mikmak-abc123.json` — or use the on-screen canvas if the workflow has
-one. Press **Run** yourself; only a person can start a real robot run.
-
-### See what's happened / what it found
-
-```bash
-uv run marimo run pipeline/apps/dashboard.py
-```
-
-Shows every round, its current stage, and — once Analyze has run — the actual
-fitted results (dose-response curves, IC50s, go/no-go calls).
 
 ### Check on a round any time
 
@@ -139,14 +121,19 @@ bd list                        # every round tracked so far
 - **The compound library is a placeholder.** `pipeline/library/compounds.csv`
   has 3 made-up example rows. Swap in the real list (same three columns:
   `compound_id,source_well,stock_conc_um`) and everything downstream just works.
-- **Plate-reader parsing is a stub.** The step that reads the reader's exported
-  report currently returns realistic-looking fake numbers, not real data, until
-  a real sample export is available to build the real parser against.
+- **Plate-reader parsing is real for kinetics, still a stub for endpoint reads.**
+  `parse_gen5_export`'s kinetic path parses actual BioTek Gen5 kinetic PDFs
+  (`data/platereader/<execution_id>/*.pdf`) — verified against a real hardware
+  export. Its endpoint path (used by the compound screen and the sfGFP go/no-go
+  check) still returns realistic-looking fake numbers until a real endpoint
+  sample export is available to build against.
 - **Concentration ranges are placeholders**, clearly marked in the code, meant
   to be replaced with real values from whoever's running the wet-lab side.
-- **Nothing here has been run on a real robot yet** — this has been checked by
-  running the whole loop with fake stand-in data, and by the project's own
-  automatic file checker (`scripts/validate.py`), which currently passes clean.
+- **This has run on a real robot.** Kinetics-characterization and
+  inhibitor-dose-response rounds have both executed on hardware (see
+  `data/logs/`); the automation loop has also been traced end to end with fake
+  stand-in data, and the project's own automatic file checker
+  (`scripts/validate.py`) currently passes clean.
 
 See `CLAUDE.md` for the full technical map of the project (for anyone editing
 the workflows/skills directly rather than just running the pipeline).
